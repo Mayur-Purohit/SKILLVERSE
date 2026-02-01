@@ -63,8 +63,13 @@ def create_app(config_name='default'):
     app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
     
     # SECURITY: Fix HTTPS for Render (Google Login Fix)
+    # properly handle the X-Forwarded-Proto header set by Render
     from werkzeug.middleware.proxy_fix import ProxyFix
+    # x_proto=1 tells Flask to trust the first X-Forwarded-Proto header (which Render sets to https)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+    # Force HTTPS for url_for generation (Critical for OAuth)
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
     
     # Performance: Cache Static Files for 1 Year
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
