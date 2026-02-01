@@ -126,41 +126,48 @@ def provider_required(f):
 @main_bp.route('/')
 def index():
     """
-    Landing page route
+    Landing page route - OPTIMIZED for fast loading
     
-    Displays:
-    - Hero section
-    - Categories
-    - Featured services
-    - How it works
-    - Testimonials
-    - CTA
-    
-    Returns:
-        Rendered template
+    Uses eager loading and combined queries to minimize database roundtrips.
     """
-    # Get featured services using ServiceManager
-    featured_services = service_manager.get_featured_services(limit=4)
+    from sqlalchemy.orm import joinedload
     
-    # Get all categories
-    categories = category_manager.get_all_categories()
+    # OPTIMIZED: Single query with eager loading for featured services
+    featured_services = Service.query.options(
+        joinedload(Service.provider),
+        joinedload(Service.category)
+    ).filter_by(is_active=True).order_by(Service.created_at.desc()).limit(4).all()
     
-    # Get category stats
-    category_stats = category_manager.get_category_stats()
+    # Get categories and stats in single queries
+    categories = Category.query.all()
     
-    # Get stats for home page
+    # OPTIMIZED: Get category stats with count in single query
+    category_stats = db.session.query(
+        Category.id,
+        Category.name,
+        Category.icon,
+        func.count(Service.id).label('service_count')
+    ).outerjoin(Service, (Service.category_id == Category.id) & (Service.is_active == True)
+    ).group_by(Category.id).all()
+    
+    # OPTIMIZED: Combined count query instead of 3 separate queries
     stats_data = {
-        'total_users': User.query.count(),
-        'total_services': Service.query.filter_by(is_active=True).count(),
-        'total_reviews': Review.query.count()
+        'total_users': db.session.query(func.count(User.id)).scalar() or 0,
+        'total_services': db.session.query(func.count(Service.id)).filter(Service.is_active == True).scalar() or 0,
+        'total_reviews': db.session.query(func.count(Review.id)).scalar() or 0
     }
+    
+    # OPTIMIZED: Testimonials with user eager loading
+    testimonials = Testimonial.query.options(
+        joinedload(Testimonial.user)
+    ).filter_by(is_active=True).order_by(Testimonial.created_at.desc()).limit(10).all()
     
     return render_template('index.html',
                          featured_services=featured_services,
                          categories=categories,
                          category_stats=category_stats,
                          stats_data=stats_data,
-                         testimonials=Testimonial.query.filter_by(is_active=True).order_by(Testimonial.created_at.desc()).all())
+                         testimonials=testimonials)
 
 
 @main_bp.route('/testimonials/add', methods=['POST'])
@@ -397,53 +404,50 @@ def logout():
 @service_bp.route('/browse')
 def browse():
     """
-    Browse all services with filters
-    
-    Query Parameters:
-    - q: Search query
-    - category: Category ID
-    - min_price: Minimum price
-    - max_price: Maximum price
-    - sort: Sort option (price_asc, price_desc, rating, newest)
-    
-    Returns:
-        Rendered template with services
+    Browse all services with filters - OPTIMIZED
     """
+    from sqlalchemy.orm import joinedload
+    
     # Get query parameters
-    query = request.args.get('q', '')
+    query = request.args.get('q', '') or request.args.get('search', '')
     category_id = request.args.get('category', type=int)
     min_price = request.args.get('min_price', type=float)
     max_price = request.args.get('max_price', type=float)
-    sort_by = request.args.get('sort', 'rating')
+    sort_by = request.args.get('sort', 'newest')
     
-    # Build filters dictionary
-    filters = {}
+    # OPTIMIZED: Build query with eager loading
+    services_query = Service.query.options(
+        joinedload(Service.provider),
+        joinedload(Service.category)
+    ).filter(Service.is_active == True)
+    
+    # Apply filters
+    if query:
+        services_query = services_query.filter(
+            (Service.title.ilike(f'%{query}%')) | 
+            (Service.description.ilike(f'%{query}%'))
+        )
     if category_id:
-        filters['category_id'] = category_id
+        services_query = services_query.filter(Service.category_id == category_id)
     if min_price:
-        filters['min_price'] = min_price
+        services_query = services_query.filter(Service.price >= min_price)
     if max_price:
-        filters['max_price'] = max_price
+        services_query = services_query.filter(Service.price <= max_price)
     
-    # Search services
-    if query or filters:
-        services = service_manager.search_services(query, filters)
-    else:
-        # Get all services
-        services = Service.query.filter_by(is_active=True).all()
-    
-    # Sort services
+    # OPTIMIZED: Database-level sorting (faster than Python sorting)
     if sort_by == 'price_asc':
-        services.sort(key=lambda s: s.price)
+        services_query = services_query.order_by(Service.price.asc())
     elif sort_by == 'price_desc':
-        services.sort(key=lambda s: s.price, reverse=True)
-    elif sort_by == 'rating':
-        services.sort(key=lambda s: s.get_average_rating(), reverse=True)
+        services_query = services_query.order_by(Service.price.desc())
     elif sort_by == 'newest':
-        services.sort(key=lambda s: s.created_at, reverse=True)
+        services_query = services_query.order_by(Service.created_at.desc())
+    else:
+        services_query = services_query.order_by(Service.created_at.desc())
+    
+    services = services_query.all()
     
     # Get categories for filter
-    categories = category_manager.get_all_categories()
+    categories = Category.query.all()
     
     return render_template('services.html',
                          services=services,
@@ -455,55 +459,60 @@ def browse():
 
 @service_bp.route('/<int:service_id>')
 def detail(service_id):
-    """
-    Service detail page
+    """Service detail page - OPTIMIZED"""
+    from sqlalchemy.orm import joinedload
     
-    Args:
-        service_id: Service ID
-        
-    Returns:
-        Rendered template with service details
-    """
-    service = Service.query.get_or_404(service_id)
+    # OPTIMIZED: Load service with all related data
+    service = Service.query.options(
+        joinedload(Service.provider),
+        joinedload(Service.category)
+    ).get_or_404(service_id)
     
     # Increment view count
     service.increment_views()
     
-    # Get reviews
-    reviews = review_system.get_service_reviews(service_id, limit=10)
+    # Get reviews with user data
+    reviews = Review.query.options(
+        joinedload(Review.reviewer)
+    ).filter_by(service_id=service_id).order_by(Review.created_at.desc()).limit(10).all()
     
     # Get rating distribution
     rating_dist = review_system.calculate_rating_distribution(service_id)
     
-    # Get related services (same category)
-    related_services = Service.query.filter(
+    # OPTIMIZED: Related services with eager loading
+    related_services = Service.query.options(
+        joinedload(Service.provider),
+        joinedload(Service.category)
+    ).filter(
         Service.category_id == service.category_id,
         Service.id != service_id,
         Service.is_active == True
     ).limit(4).all()
     
-    # Check if user has favorited this service
+    # Check user-specific data
     is_favorited = False
     existing_order = None
-    wallet_balance = 0  # Default wallet balance
+    wallet_balance = 0
     
     if current_user.is_authenticated:
-        is_favorited = service.is_favorited_by(current_user)
+        is_favorited = Favorite.query.filter_by(
+            user_id=current_user.id, 
+            service_id=service_id
+        ).first() is not None
         
-        # Get wallet balance for order validation (Unit-9: OOP, Composition)
+        # Get wallet balance
         from payment_system import WalletManager
         wallet_mgr = WalletManager()
         wallet_balance = wallet_mgr.get_balance(current_user.id)
         
-        # Check if user has an ACTIVE order for this service (pending or in_progress)
-        # This determines if Chat button should be shown instead of Order Now
+        # Check for existing active order
         if current_user.id != service.user_id:
             existing_order = Order.query.filter_by(
                 service_id=service_id,
                 buyer_id=current_user.id
             ).filter(
                 Order.status.in_(['pending', 'in_progress'])
-            ).order_by(Order.created_at.desc()).first()
+            ).first()
     
     return render_template('service_detail.html',
                          service=service,

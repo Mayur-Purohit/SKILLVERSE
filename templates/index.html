@@ -322,7 +322,8 @@
                     <div class="position-relative">
                         <img src="{{ service.get_image_url() }}"
                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&q=80';"
-                            class="w-100 object-fit-cover" style="height: 200px;" alt="{{ service.title }}">
+                            class="w-100 object-fit-cover" style="height: 200px;" alt="{{ service.title }}"
+                            loading="lazy" decoding="async">
 
                         <!-- Favorite Button -->
                         <button type="button"
@@ -362,7 +363,7 @@
                         <div class="d-flex align-items-center mt-auto pt-2 border-top">
                             <img src="{{ service.provider.get_avatar_url() }}"
                                 class="rounded-circle object-fit-cover me-2" style="width: 32px; height: 32px;"
-                                alt="{{ service.provider.username }}">
+                                alt="{{ service.provider.username }}" loading="lazy" decoding="async">
                             <div class="small text-muted text-truncate" style="max-width: 120px;">
                                 By <span class="text-dark fw-medium">{{ service.provider.username }}</span>
                             </div>

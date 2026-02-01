@@ -118,7 +118,8 @@
                         <div class="service-card">
                             <div class="service-image-container">
                                 <img src="{{ service.get_image_url() }}" class="service-image" alt="{{ service.title }}"
-                                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500';">
+                                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500';"
+                                    loading="lazy" decoding="async">
                                 <span class="service-badge">{{ service.category.name }}</span>
                                 <button type="button" class="favorite-button" data-service-id="{{ service.id }}">
                                     <i
@@ -140,7 +141,8 @@
                                     <div class="provider-info">
                                         <img src="{{ service.provider.get_avatar_url() }}" class="provider-avatar"
                                             alt="{{ service.provider.username }}"
-                                            onerror="this.onerror=null; this.src='https://via.placeholder.com/32';">
+                                            onerror="this.onerror=null; this.src='https://via.placeholder.com/32';"
+                                            loading="lazy" decoding="async">
                                         <span class="provider-name">{{ service.provider.username }}</span>
                                     </div>
                                     <div class="delivery-time">

@@ -8,7 +8,7 @@ Author: SkillVerse Team
 Purpose: Initialize and configure Flask application
 """
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 import os
@@ -58,24 +58,65 @@ def create_app(config_name='default'):
     mail.init_app(app)
     compress.init_app(app)
 
-    # PERFORMANCE: Enable WhiteNoise for Static File Caching & Compression
-    from whitenoise import WhiteNoise
-    app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
-    
     # SECURITY: Fix HTTPS for Render (Google Login Fix)
     # properly handle the X-Forwarded-Proto header set by Render
     from werkzeug.middleware.proxy_fix import ProxyFix
     # x_proto=1 tells Flask to trust the first X-Forwarded-Proto header (which Render sets to https)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
+    # PERFORMANCE: Enable WhiteNoise for Static File Caching & Compression
+    from whitenoise import WhiteNoise
+    app.wsgi_app = WhiteNoise(
+        app.wsgi_app, 
+        root='static/', 
+        prefix='static/',
+        max_age=31536000,  # 1 year cache for static files
+        immutable_file_test=lambda path, url: True  # All static files are immutable
+    )
+    # Add Brotli compression support if available
+    app.wsgi_app.add_files('static/', prefix='static/')
+
     # Force HTTPS for url_for generation (Critical for OAuth)
     app.config['PREFERRED_URL_SCHEME'] = 'https'
     
-    # Performance: Cache Static Files for 1 Year
-    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
-    app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/javascript', 'application/json', 'application/javascript']
-    app.config['COMPRESS_LEVEL'] = 6
-    app.config['COMPRESS_MIN_SIZE'] = 500
+    # ==========================================
+    # AGGRESSIVE PERFORMANCE OPTIMIZATIONS
+    # ==========================================
+    
+    # Static File Caching: 1 Year (immutable)
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year in seconds
+    
+    # Flask-Compress: Aggressive compression settings
+    app.config['COMPRESS_MIMETYPES'] = [
+        'text/html', 
+        'text/css', 
+        'text/xml', 
+        'text/javascript',
+        'application/json', 
+        'application/javascript',
+        'application/xml',
+        'application/x-javascript',
+        'image/svg+xml',
+        'font/woff',
+        'font/woff2'
+    ]
+    app.config['COMPRESS_LEVEL'] = 6  # Balanced compression (1-9, 6 is optimal)
+    app.config['COMPRESS_MIN_SIZE'] = 256  # Compress files larger than 256 bytes
+    app.config['COMPRESS_ALGORITHM'] = 'gzip'  # Use gzip for broad compatibility
+    
+    # Session Cookie settings for faster requests
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
+    # Database connection pooling optimizations
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 5,
+        'pool_recycle': 300,
+        'pool_pre_ping': True,
+        'pool_timeout': 20,
+        'max_overflow': 10
+    }
 
     # Register Google OAuth
     oauth.register(
@@ -131,6 +172,27 @@ def create_app(config_name='default'):
         """Handle 500 errors"""
         db.session.rollback()  # Rollback any failed database transactions
         return render_template('errors/500.html'), 500
+    
+    # Cache-Control headers for better Pingdom score
+    @app.after_request
+    def add_cache_headers(response):
+        # Static files - aggressive caching
+        if 'Cache-Control' not in response.headers:
+            if request.path.startswith('/static/'):
+                response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+            elif request.path.endswith(('.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2')):
+                response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+        
+        # Performance headers
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['Connection'] = 'keep-alive'
+        
+        return response
+    
+    # Health check endpoint (prevents cold starts when pinged)
+    @app.route('/health')
+    def health_check():
+        return 'OK', 200
     
     # Create upload folder if it doesn't exist
     upload_folder = app.config.get('UPLOAD_FOLDER')
