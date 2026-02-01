@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Services - Admin{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="fw-bold">Manage Services</h2>
+                <p class="text-muted">View and manage all services</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Provider</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Rating</th>
+                                <th>Views</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in services %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('service.detail', service_id=service.id) }}"
+                                        class="text-decoration-none fw-medium">
+                                        {{ service.title[:50] }}{% if service.title|length > 50 %}...{% endif %}
+                                    </a>
+                                </td>
+                                <td>{{ service.provider.username }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ service.category.name }}</span>
+                                </td>
+                                <td>₹{{ "%.0f"|format(service.price) }}</td>
+                                <td>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    {{ service.get_average_rating() }}
+                                </td>
+                                <td>{{ service.view_count }}</td>
+                                <td>
+                                    <span class="badge bg-{% if service.is_active %}success{% else %}danger{% endif %}">
+                                        {% if service.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('service.edit', service_id=service.id) }}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('service.delete', service_id=service.id) }}"
+                                        class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('PERMANENT DELETE: This will completely remove the service from the database. This action cannot be undone. Continue?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

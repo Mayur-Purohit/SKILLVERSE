@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - TXN20260127202226785</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .invoice-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .invoice-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .invoice-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        .invoice-body {
+            padding: 40px;
+        }
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+        .info-block h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-block p {
+            font-size: 1rem;
+            color: #333;
+        }
+        .transaction-details {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+        .amount-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .amount-section h2 {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .amount-section .amount {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #28a745;
+            color: white;
+        }
+        .invoice-footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            color: #666;
+        }
+        .invoice-footer p {
+            margin-bottom: 10px;
+        }
+        .brand {
+            color: #667eea;
+            font-weight: 700;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .invoice-container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <h1>📋 INVOICE</h1>
+            <p>SkillVerse Payment Receipt</p>
+        </div>
+        
+        <div class="invoice-body">
+            <div class="invoice-info">
+                <div class="info-block">
+                    <h3>Transaction ID</h3>
+                    <p>TXN20260127202226785</p>
+                </div>
+                <div class="info-block">
+                    <h3>Date & Time</h3>
+                    <p>2026-01-27 at 20:22:26</p>
+                </div>
+                <div class="info-block">
+                    <h3>Status</h3>
+                    <p><span class="status-badge">SUCCESS</span></p>
+                </div>
+            </div>
+            
+            <div class="amount-section">
+                <h2>Total Amount</h2>
+                <div class="amount">₹200.00</div>
+            </div>
+            
+            <div class="transaction-details">
+                <div class="detail-row">
+                    <span class="detail-label">Description</span>
+                    <span class="detail-value">Course Purchase</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Payment Method</span>
+                    <span class="detail-value">WALLET</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">User ID</span>
+                    <span class="detail-value">user_demo_123</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Transaction Date</span>
+                    <span class="detail-value">2026-01-27</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Transaction Time</span>
+                    <span class="detail-value">20:22:26</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="invoice-footer">
+            <p>Thank you for using <span class="brand">SkillVerse</span>!</p>
+            <p>This is a computer-generated invoice. No signature required.</p>
+            <p>Generated on: 2026-01-27 20:22:26</p>
+        </div>
+    </div>
+</body>
+</html>
