@@ -155,6 +155,12 @@ def create_app(config_name='default'):
     return app
 
 
+# Create app instance for Gunicorn (production)
+# This is needed because Gunicorn looks for 'app' at module level
+config_name = os.environ.get('FLASK_ENV', 'production')
+app = create_app(config_name)
+
+
 if __name__ == '__main__':
     """
     Run the application
