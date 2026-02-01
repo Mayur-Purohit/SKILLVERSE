@@ -40,6 +40,9 @@ requests==2.31.0
 Flask-Moment==1.0.5
 Flask-Compress==1.14
 
+# Charts and Graphs
+matplotlib>=3.8.0
+
 # For future Firebase integration
 # firebase-admin==6.3.0  # Uncomment when Firebase SDK is provided
 
