@@ -5,13 +5,17 @@ import multiprocessing
 # Bind to the port provided by Render
 bind = "0.0.0.0:10000"
 
-# Number of worker processes (Optimized for Render Free/Starter tiers)
-# Using too many workers on free tier causes memory crashes.
-# 2 workers is the sweet spot.
-workers = 2
+# Worker Class (REQUIRED for Flask-SocketIO)
+# Using 'eventlet' allows handling thousands of concurrent connections asynchronously.
+worker_class = 'eventlet'
 
-# Threads per worker (Best for database-heavy apps)
-threads = 4
+# Number of worker processes
+# MUST be 1 because we are not using Redis for message queue.
+# With eventlet, 1 worker is sufficient for 1000+ concurrent users.
+workers = 1
+
+# Threads are not used with eventlet worker class
+# threads = 4
 
 # Timeout for workers (Prevent killing slow requests too early)
 timeout = 120
