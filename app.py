@@ -62,6 +62,10 @@ def create_app(config_name='default'):
     from whitenoise import WhiteNoise
     app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/')
     
+    # SECURITY: Fix HTTPS for Render (Google Login Fix)
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+    
     # Performance: Cache Static Files for 1 Year
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
     app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/javascript', 'application/json', 'application/javascript']
