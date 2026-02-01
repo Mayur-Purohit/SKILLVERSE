@@ -561,7 +561,7 @@ class ReviewSystem:
         if limit:
             query = query.limit(limit)
         
-        return query.all()
+        return query.options(joinedload(Review.reviewer)).all()
     
     def calculate_rating_distribution(self, service_id):
         """
@@ -689,11 +689,17 @@ class OrderManager:
             list: Order objects
         """
         if as_buyer:
-            return Order.query.filter_by(buyer_id=user_id)\
-                             .order_by(Order.created_at.desc()).all()
+            return Order.query.options(
+                joinedload(Order.service),
+                joinedload(Order.seller)
+            ).filter_by(buyer_id=user_id)\
+            .order_by(Order.created_at.desc()).all()
         else:
-            return Order.query.filter_by(seller_id=user_id)\
-                             .order_by(Order.created_at.desc()).all()
+            return Order.query.options(
+                joinedload(Order.service),
+                joinedload(Order.buyer)
+            ).filter_by(seller_id=user_id)\
+            .order_by(Order.created_at.desc()).all()
     
     def update_order_status(self, order_id, new_status):
         """

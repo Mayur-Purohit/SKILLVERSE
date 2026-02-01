@@ -137,31 +137,26 @@ class User(UserMixin, db.Model):
     
     def get_average_rating(self):
         """
-        Calculate average rating for user's services
-        
-        Algorithm:
-        1. Get all services by this user
-        2. For each service, get its average rating
-        3. Calculate overall average
-        
-        Returns:
-            float: Average rating (0.0 to 5.0)
+        Calculate average rating for user's services - OPTIMIZED
+        Uses SQL aggregation instead of loading all services and reviews.
         """
-        services = self.get_services()
-        if not services:
-            return 0.0
-        
-        total_rating = sum(service.get_average_rating() for service in services)
-        return round(total_rating / len(services), 1)
+        from sqlalchemy import func
+        result = db.session.query(func.avg(Review.rating)).join(Service).filter(
+            Service.user_id == self.id,
+            Service.is_active == True
+        ).scalar()
+        return round(result, 1) if result else 0.0
     
     def get_total_reviews(self):
         """
-        Get total number of reviews across all services
-        
-        Returns:
-            int: Total review count
+        Get total number of reviews across all services - OPTIMIZED
+        Uses SQL count instead of Python iteration.
         """
-        return sum(service.reviews.count() for service in self.get_services())
+        from sqlalchemy import func
+        return db.session.query(func.count(Review.id)).join(Service).filter(
+            Service.user_id == self.id,
+            Service.is_active == True
+        ).scalar() or 0
     
     def is_admin(self):
         """
@@ -336,22 +331,12 @@ class Service(db.Model):
     
     def get_average_rating(self):
         """
-        Calculate average rating for this service
-        
-        Algorithm:
-        1. Get all reviews for this service
-        2. Calculate sum of ratings
-        3. Divide by count
-        
-        Returns:
-            float: Average rating (0.0 to 5.0)
+        Calculate average rating for this service - OPTIMIZED
+        Uses SQL aggregation instead of loading all reviews.
         """
-        reviews = self.reviews.all()
-        if not reviews:
-            return 0.0
-        
-        total_rating = sum(review.rating for review in reviews)
-        return round(total_rating / len(reviews), 1)
+        from sqlalchemy import func
+        result = db.session.query(func.avg(Review.rating)).filter(Review.service_id == self.id).scalar()
+        return round(result, 1) if result else 0.0
     
     def get_review_count(self):
         """
