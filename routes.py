@@ -20,7 +20,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from datetime import datetime, timezone, timedelta
 from flask_login import login_user, logout_user, login_required, current_user
 from functools import wraps
-from models import db, User, Service, Category, Review, Order, Favorite, Notification, Message, ProjectShowcase, AvailabilitySlot, Booking, Testimonial
+from models import db, User, Service, Category, Review, Order, Favorite, Notification, Message, ProjectShowcase, AvailabilitySlot, Booking, Testimonial, ContactMessage
 from managers import (service_manager, user_manager, search_engine, 
                      review_system, order_manager, category_manager, notification_manager, chat_manager, availability_manager)
 from werkzeug.utils import secure_filename
@@ -211,10 +211,48 @@ def about():
     return render_template('about.html', stats_data=stats_data)
 
 
-@main_bp.route('/contact')
+@main_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
     """Contact page"""
+    if request.method == 'POST':
+        name = request.form.get('firstName') + ' ' + request.form.get('lastName')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        if not name or not email or not subject or not message:
+            flash('Please fill in all required fields.', 'danger')
+        else:
+            try:
+                new_message = ContactMessage(
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    subject=subject,
+                    message=message
+                )
+                db.session.add(new_message)
+                db.session.commit()
+                flash('Your message has been sent successfully!', 'success')
+                return redirect(url_for('main.contact'))
+            except Exception as e:
+                db.session.rollback()
+                flash('An error occurred while sending your message. Please try again.', 'danger')
+                print(f"Error sending message: {e}")
+
     return render_template('contact.html')
+
+@main_bp.route('/terms')
+def terms():
+    """Terms of Service page"""
+    return render_template('legal/terms.html')
+
+
+@main_bp.route('/privacy')
+def privacy():
+    """Privacy Policy page"""
+    return render_template('legal/privacy.html')
 
 
 # ============================================================================
@@ -1842,6 +1880,13 @@ def availability():
     """Admin page to view all availability slots"""
     slots = AvailabilitySlot.query.order_by(AvailabilitySlot.start_time.desc()).all()
     return render_template('admin/availability.html', slots=slots)
+
+@admin_bp.route('/messages')
+@admin_required
+def messages():
+    """Contact messages"""
+    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    return render_template('admin/messages.html', messages=messages)
 
 
 # ============================================================================

@@ -3,6 +3,27 @@
 {% block title %}Contact Us - SkillVerse{% endblock %}
 
 {% block content %}
+<style>
+    /* Standardize Input Styling to match Auth pages */
+    .form-control {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--foreground-color);
+    }
+
+    [data-bs-theme="dark"] .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--foreground-color);
+    }
+
+    [data-bs-theme="dark"] .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(139, 92, 246, 0.25);
+        color: var(--foreground-color);
+    }
+</style>
 <section class="position-relative overflow-hidden py-5 hero-section d-flex align-items-center min-vh-100">
     <!-- Animated Orbs -->
     <div class="orb orb-1"></div>
@@ -12,10 +33,10 @@
     <div class="container position-relative z-2 py-5">
         <div class="row g-5 align-items-stretch">
 
-            <!-- Contact Form (Left Side) -->
-            <div class="col-lg-7 fade-in-up">
+            <!-- Contact Form (Centered) -->
+            <div class="col-lg-8 mx-auto fade-in-up">
                 <div class="card h-100 border-0 shadow-sm feature-card p-5">
-                    <form class="needs-validation" novalidate>
+                    <form method="POST" action="{{ url_for('main.contact') }}" class="needs-validation" novalidate>
                         <!-- Added visual header -->
                         <div class="mb-4">
                             <h2 class="fw-bold mb-2">Send us a Message</h2>
@@ -27,8 +48,8 @@
                                 <label for="firstName"
                                     class="form-label fw-bold small text-muted text-uppercase tracking-wider">First
                                     Name</label>
-                                <input type="text" class="form-control bg-light-subtle border-0 rounded-3 py-3"
-                                    id="firstName" placeholder="Enter First Name" required>
+                                <input type="text" class="form-control form-control-lg rounded-3 py-3" id="firstName"
+                                    name="firstName" placeholder="Enter First Name" required>
                                 <div class="invalid-feedback">
                                     Please enter your first name.
                                 </div>
@@ -37,8 +58,8 @@
                                 <label for="lastName"
                                     class="form-label fw-bold small text-muted text-uppercase tracking-wider">Last
                                     Name</label>
-                                <input type="text" class="form-control bg-light-subtle border-0 rounded-3 py-3"
-                                    id="lastName" placeholder="Enter Last Name" required>
+                                <input type="text" class="form-control form-control-lg rounded-3 py-3" id="lastName"
+                                    name="lastName" placeholder="Enter Last Name" required>
                                 <div class="invalid-feedback">
                                     Please enter your last name.
                                 </div>
@@ -46,8 +67,8 @@
                             <div class="col-md-6">
                                 <label for="email"
                                     class="form-label fw-bold small text-muted text-uppercase tracking-wider">Email</label>
-                                <input type="email" class="form-control bg-light-subtle border-0 rounded-3 py-3"
-                                    id="email" placeholder="Enter your Email" required>
+                                <input type="email" class="form-control form-control-lg rounded-3 py-3" id="email"
+                                    name="email" placeholder="Enter your Email" required>
                                 <div class="invalid-feedback">
                                     Please enter a valid email address.
                                 </div>
@@ -55,14 +76,14 @@
                             <div class="col-md-6">
                                 <label for="phone"
                                     class="form-label fw-bold small text-muted text-uppercase tracking-wider">Phone</label>
-                                <input type="tel" class="form-control bg-light-subtle border-0 rounded-3 py-3"
-                                    id="phone" placeholder="Enter Phone Number">
+                                <input type="tel" class="form-control form-control-lg rounded-3 py-3" id="phone"
+                                    name="phone" placeholder="Enter Phone Number">
                             </div>
                             <div class="col-12">
                                 <label for="subject"
                                     class="form-label fw-bold small text-muted text-uppercase tracking-wider">Subject</label>
-                                <input type="text" class="form-control bg-light-subtle border-0 rounded-3 py-3"
-                                    id="subject" placeholder="Enter your Subject" required>
+                                <input type="text" class="form-control form-control-lg rounded-3 py-3" id="subject"
+                                    name="subject" placeholder="Enter your Subject" required>
                                 <div class="invalid-feedback">
                                     Please enter a subject.
                                 </div>
@@ -70,8 +91,9 @@
                             <div class="col-12">
                                 <label for="message"
                                     class="form-label fw-bold small text-muted text-uppercase tracking-wider">Message</label>
-                                <textarea class="form-control bg-light-subtle border-0 rounded-3 py-3" id="message"
-                                    rows="5" placeholder="Enter your Message here..." required></textarea>
+                                <textarea class="form-control form-control-lg rounded-3 py-3" id="message"
+                                    name="message" rows="5" placeholder="Enter your Message here..."
+                                    required></textarea>
                                 <div class="invalid-feedback">
                                     Please enter your message.
                                 </div>
@@ -87,61 +109,7 @@
                 </div>
             </div>
 
-            <!-- Contact Info (Right Side) -->
-            <div class="col-lg-5 fade-in-up delay-100">
-                <div class="d-flex flex-column gap-4 h-100">
 
-                    <!-- Email Card -->
-                    <div class="card border-0 shadow-sm feature-card p-4 text-center hover-lift">
-                        <div class="mb-3">
-                            <div
-                                class="bg-light-subtle rounded-3 d-inline-flex align-items-center justify-content-center p-3">
-                                <i class="bi bi-envelope-fill fs-4 text-body"></i>
-                            </div>
-                        </div>
-                        <p class="mb-0 fw-medium text-muted">support@skillverse.com</p>
-                    </div>
-
-                    <!-- Phone Card -->
-                    <div class="card border-0 shadow-sm feature-card p-4 text-center hover-lift">
-                        <div class="mb-3">
-                            <div
-                                class="bg-light-subtle rounded-3 d-inline-flex align-items-center justify-content-center p-3">
-                                <i class="bi bi-telephone-fill fs-4 text-body"></i>
-                            </div>
-                        </div>
-                        <p class="mb-0 fw-medium text-muted">+91 00000 00000</p>
-                    </div>
-
-                    <!-- Location Card -->
-                    <div class="card border-0 shadow-sm feature-card p-4 text-center hover-lift">
-                        <div class="mb-3">
-                            <div
-                                class="bg-light-subtle rounded-3 d-inline-flex align-items-center justify-content-center p-3">
-                                <i class="bi bi-geo-alt-fill fs-4 text-body"></i>
-                            </div>
-                        </div>
-                        <p class="mb-0 fw-medium text-muted">Some Where in the World</p>
-                    </div>
-
-                    <!-- Social Profiles Card -->
-                    <div class="card border-0 shadow-sm feature-card p-4 text-center hover-lift">
-                        <div class="d-flex justify-content-center gap-3 mb-3">
-                            <a href="#" class="bg-light-subtle rounded-3 p-3 text-body hover-scale transition-all">
-                                <i class="bi bi-facebook fs-4"></i>
-                            </a>
-                            <a href="#" class="bg-light-subtle rounded-3 p-3 text-body hover-scale transition-all">
-                                <i class="bi bi-twitter-x fs-4"></i>
-                            </a>
-                            <a href="#" class="bg-light-subtle rounded-3 p-3 text-body hover-scale transition-all">
-                                <i class="bi bi-linkedin fs-4"></i>
-                            </a>
-                        </div>
-                        <p class="mb-0 text-muted small fw-bold">Social Profiles</p>
-                    </div>
-
-                </div>
-            </div>
 
         </div>
     </div>
@@ -164,29 +132,26 @@
         // Exact 10 digits
         const phonePattern = "^[0-9]{10}$";
 
-        nameInput.setAttribute('pattern', namePattern);
-        lastNameInput.setAttribute('pattern', namePattern);
-        subjectInput.setAttribute('pattern', subjectPattern);
-        phoneInput.setAttribute('pattern', phonePattern);
-        phoneInput.required = true; // Make phone required as requested
+        if (nameInput) nameInput.setAttribute('pattern', namePattern);
+        if (lastNameInput) lastNameInput.setAttribute('pattern', namePattern);
+        if (subjectInput) subjectInput.setAttribute('pattern', subjectPattern);
+        if (phoneInput) {
+            phoneInput.setAttribute('pattern', phonePattern);
+            phoneInput.required = true;
+        }
 
         // Handle Form Submission
         const form = document.querySelector('.needs-validation');
-        form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent actual submission for demo
-
-            if (form.checkValidity()) {
-                // Show Success Message
-                window.showToast('Message send successfully!', 'success');
-                form.reset();
-                form.classList.remove('was-validated');
-            } else {
-                event.stopPropagation();
-                window.showToast('Please correct the errors in the form.', 'error');
-            }
-
-            form.classList.add('was-validated');
-        }, false);
+        if (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    window.showToast('Please correct the errors in the form.', 'error');
+                }
+                form.classList.add('was-validated');
+            }, false);
+        }
     });
 </script>
 {% endblock %}

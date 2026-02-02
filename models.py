@@ -699,3 +699,21 @@ class Testimonial(db.Model):
 
     def __repr__(self):
         return f'<Testimonial {self.id} by {self.user_id}>'
+    
+class ContactMessage(db.Model):
+    """
+    ContactMessage Model - Stores messages from the contact form
+    """
+    __tablename__ = 'contact_messages'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return f'<ContactMessage {self.email} - {self.subject}>'
