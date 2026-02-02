@@ -8,6 +8,8 @@ Author: SkillVerse Team
 Purpose: Initialize and configure Flask application
 """
 
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, render_template, request
 from flask_login import LoginManager
 from flask_socketio import SocketIO

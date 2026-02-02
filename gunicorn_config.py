@@ -14,7 +14,7 @@ worker_class = 'eventlet'
 
 # Number of worker processes
 # User requested 2. With eventlet, even 1 is powerful, but we'll set 2.
-workers = 2
+workers = 1
 
 # Threads (Not used with eventlet, but kept for reference if switching to gthread)
 # threads = 2
