@@ -499,6 +499,7 @@ def browse():
 
 
 @service_bp.route('/<int:service_id>')
+@cache.cached(timeout=60, query_string=True)
 def detail(service_id):
     """Service detail page - OPTIMIZED"""
     from sqlalchemy.orm import joinedload

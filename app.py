@@ -101,19 +101,25 @@ def create_app(config_name='default'):
     app.config['COMPRESS_MIN_SIZE'] = 256  # Compress files larger than 256 bytes
     app.config['COMPRESS_ALGORITHM'] = 'gzip'  # Use gzip for broad compatibility
     
+    # Database optimization (User Requested)
+    app.config['SQLALCHEMY_POOL_SIZE'] = 5
+    app.config['SQLALCHEMY_POOL_TIMEOUT'] = 10
+    app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
+    app.config['SQLALCHEMY_MAX_OVERFLOW'] = 2
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 280,
+    }
+    
+    # Production optimizations
+    app.config['TEMPLATES_AUTO_RELOAD'] = False
+    app.config['JSON_SORT_KEYS'] = False
+    
     # Session Cookie settings for faster requests
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    
-    # Database connection pooling optimizations
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_size': 5,
-        'pool_recycle': 300,
-        'pool_pre_ping': True,
-        'pool_timeout': 20,
-        'max_overflow': 10
-    }
 
     # Register Google OAuth
     oauth.register(
@@ -224,6 +230,12 @@ def create_app(config_name='default'):
             return dt.astimezone(ist_tz)
         return dt
     
+    # Database Connection Management
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        if hasattr(db, 'session'):
+            db.session.remove()
+
     return app
 
 

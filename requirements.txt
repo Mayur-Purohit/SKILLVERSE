@@ -15,7 +15,7 @@ eventlet>=0.33.0
 
 # Database
 SQLAlchemy>=2.0.35
-psycopg2-binary>=2.9.9
+psycopg2-binary==2.9.9
 
 # Security & Authentication
 Werkzeug==3.0.1

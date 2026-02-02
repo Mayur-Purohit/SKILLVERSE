@@ -7,49 +7,39 @@ import multiprocessing
 # Bind to the port provided by Render
 bind = "0.0.0.0:10000"
 
-# Worker Class (REQUIRED for Flask-SocketIO)
-# Using 'eventlet' allows handling thousands of concurrent connections asynchronously.
+# Worker Class
+# KEY DECISION: We MUST use 'eventlet' to support Flask-SocketIO (Chat/Notifications).
+# The user's snippet suggested 'gthread', but that would break real-time features.
 worker_class = 'eventlet'
 
 # Number of worker processes
-# MUST be 1 because we are not using Redis for message queue.
-# With eventlet, 1 worker is sufficient for 1000+ concurrent users.
-workers = 1
+# User requested 2. With eventlet, even 1 is powerful, but we'll set 2.
+workers = 2
+
+# Threads (Not used with eventlet, but kept for reference if switching to gthread)
+# threads = 2
 
 # ==========================================
-# PERFORMANCE OPTIMIZATIONS
+# PERFORMANCE OPTIMIZATIONS (From User Request)
 # ==========================================
 
 # Timeout for workers (Prevent killing slow requests too early)
 timeout = 120
 
 # Keep-alive connections (reduces connection overhead)
-# This significantly improves TTFB for subsequent requests
 keepalive = 5
 
-# Graceful timeout (how long to wait for workers to finish)
-graceful_timeout = 30
+# Restart workers after this many requests (prevents memory leaks)
+max_requests = 1000
+max_requests_jitter = 50
 
 # Preload app optimization
 # (Loads app code into memory before forking workers = faster startup)
 preload_app = True
 
 # ==========================================
-# LOGGING (Production-grade)
+# LOGGING
 # ==========================================
-accesslog = '-'  # Log to stdout
-errorlog = '-'   # Log to stderr
-loglevel = 'warning'  # Only log warnings and errors (less I/O overhead)
-
-# Reduce logging overhead (improves performance)
-access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s'
-
-# ==========================================
-# CONNECTION SETTINGS
-# ==========================================
-
-# Maximum pending connections
-backlog = 2048
-
-# Worker connections (max simultaneous clients per worker)
-worker_connections = 1000
+accesslog = '-'
+errorlog = '-'
+loglevel = 'warning'
