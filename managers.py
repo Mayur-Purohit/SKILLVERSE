@@ -915,22 +915,27 @@ class AvailabilityManager:
     def get_provider_slots(self, provider_id, start_date, end_date):
         """
         Get slots for a provider within a date range
+        OPTIMIZED: Uses eager loading to avoid N+1 query problem
         """
         from models import AvailabilitySlot, User, Booking
         
-        # 1. Get SkillVerse Slots
-        slots = AvailabilitySlot.query.filter(
+        # 1. Get SkillVerse Slots with Eager Loaded Booking
+        # Use joinedload to fetch matching booking in the same query
+        slots = AvailabilitySlot.query.options(
+            joinedload(AvailabilitySlot.booking)
+        ).filter(
             AvailabilitySlot.provider_id == provider_id,
             AvailabilitySlot.start_time >= start_date,
             AvailabilitySlot.start_time <= end_date
         ).order_by(AvailabilitySlot.start_time).all()
         
         # Self-healing: Ensure is_booked flag matches actual Booking table state
-        # This fixes "Ghost Availability" where slot shows green but booking fails
+        # Now performed entirely in-memory using the eager-loaded relationship
         consistency_fix = False
         for slot in slots:
             if not slot.is_booked:
-                active_booking = Booking.query.filter_by(slot_id=slot.id).first()
+                # Accessing slot.booking is now free (in-memory)
+                active_booking = slot.booking
                 if active_booking and active_booking.status not in ['cancelled', 'rejected']:
                     slot.is_booked = True
                     consistency_fix = True
