@@ -26,6 +26,7 @@ from managers import (service_manager, user_manager, search_engine,
 from werkzeug.utils import secure_filename
 import os
 from flask import current_app
+from extensions import cache
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -124,6 +125,7 @@ def provider_required(f):
 # ============================================================================
 
 @main_bp.route('/')
+@cache.cached(timeout=300, unless=lambda: current_user.is_authenticated)
 def index():
     """
     Landing page route - OPTIMIZED for fast loading
@@ -402,6 +404,7 @@ def logout():
 # ============================================================================
 
 @service_bp.route('/browse')
+@cache.cached(timeout=300, unless=lambda: current_user.is_authenticated, query_string=True)
 def browse():
     """
     Browse all services with filters - OPTIMIZED

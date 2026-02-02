@@ -21,12 +21,8 @@ from config import get_config
 from models import db, User
 
 # Initialize Flask-Login and Flask-Mail
-from extensions import login_manager, oauth, socketio
+from extensions import login_manager, oauth, socketio, cache, compress
 from email_utils import mail
-from flask_compress import Compress
-
-# Initialize Compress
-compress = Compress()
 
 def create_app(config_name='default'):
     """
@@ -57,6 +53,7 @@ def create_app(config_name='default'):
     oauth.init_app(app)
     mail.init_app(app)
     compress.init_app(app)
+    cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 
     # SECURITY: Fix HTTPS for Render (Google Login Fix)
     # properly handle the X-Forwarded-Proto header set by Render
