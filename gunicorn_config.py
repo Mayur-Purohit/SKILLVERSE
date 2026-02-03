@@ -34,9 +34,9 @@ keepalive = 5
 max_requests = 500
 max_requests_jitter = 50
 
-# Preload app: False to save memory duplication per worker if using heavy memory
-# If memory is tight on Render Free Tier, False is safer.
-preload_app = False
+# Preload app: True to use Copy-on-Write memory sharing (saves RAM with multiple workers)
+# This is CRITICAL for running 2 workers on 512MB RAM
+preload_app = True
 
 # ==========================================
 # LOGGING
