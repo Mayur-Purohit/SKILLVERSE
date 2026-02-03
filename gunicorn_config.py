@@ -8,38 +8,39 @@ import multiprocessing
 bind = "0.0.0.0:10000"
 
 # Worker Class
-# KEY DECISION: We MUST use 'eventlet' to support Flask-SocketIO (Chat/Notifications).
-# The user's snippet suggested 'gthread', but that would break real-time features.
+# KEY DECISION: Use 'eventlet' for Flask-SocketIO support
 worker_class = 'eventlet'
 
 # Number of worker processes
-# User requested 2. With eventlet, even 1 is powerful, but we'll set 2.
-workers = 1
+# increased to 2 to handle concurrent requests (e.g. Chat + Browsing)
+# 2 workers * 1 thread each is usually safe for 512MB RAM
+workers = 2
 
-# Threads (Not used with eventlet, but kept for reference if switching to gthread)
-# threads = 2
+# Threads are not used with eventlet workers
+threads = 1
 
 # ==========================================
-# PERFORMANCE OPTIMIZATIONS (From User Request)
+# PERFORMANCE OPTIMIZATIONS
 # ==========================================
 
-# Timeout for workers (Prevent killing slow requests too early)
+# Timeout: Allow longer processing for AI/DB operations
+# Render recommends 120s for slow starts, but we want faster fail-recovery
 timeout = 120
 
-# Keep-alive connections (reduces connection overhead)
+# Keep-alive: Reduce overhead for sequential requests
 keepalive = 5
 
-# Restart workers after this many requests (prevents memory leaks)
-max_requests = 1000
+# Restart workers periodically to prevent memory leaks
+max_requests = 500
 max_requests_jitter = 50
 
-# Preload app optimization
-# (Loads app code into memory before forking workers = faster startup)
-preload_app = True
+# Preload app: False to save memory duplication per worker if using heavy memory
+# If memory is tight on Render Free Tier, False is safer.
+preload_app = False
 
 # ==========================================
 # LOGGING
 # ==========================================
 accesslog = '-'
 errorlog = '-'
-loglevel = 'warning'
+loglevel = 'info'

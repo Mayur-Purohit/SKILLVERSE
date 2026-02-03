@@ -107,7 +107,12 @@ class ProductionConfig(Config):
     SECRET_KEY = os.environ.get('SECRET_KEY')
     
     # Production database (PostgreSQL, MySQL, etc.)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    # Fix Render's 'postgres://' (deprecated) -> 'postgresql://'
+    uri = os.environ.get('DATABASE_URL')
+    if uri and uri.startswith("postgres://"):
+        uri = uri.replace("postgres://", "postgresql://", 1)
+    
+    SQLALCHEMY_DATABASE_URI = uri
     
     # Disable SQL query logging in production
     SQLALCHEMY_ECHO = False

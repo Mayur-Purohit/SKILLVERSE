@@ -931,20 +931,14 @@ class AvailabilityManager:
         
         # Self-healing: Ensure is_booked flag matches actual Booking table state
         # Now performed entirely in-memory using the eager-loaded relationship
-        consistency_fix = False
+        # PERFORMANCE FIX: Removed db.session.commit() from GET request to prevent locking/slowness
+        # We only update the in-memory objects for correct display.
         for slot in slots:
             if not slot.is_booked:
                 # Accessing slot.booking is now free (in-memory)
                 active_booking = slot.booking
                 if active_booking and active_booking.status not in ['cancelled', 'rejected']:
                     slot.is_booked = True
-                    consistency_fix = True
-        
-        if consistency_fix:
-            try:
-                db.session.commit()
-            except:
-                db.session.rollback()
         
         return slots
 

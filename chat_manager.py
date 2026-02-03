@@ -47,16 +47,23 @@ class ChatManager:
                 f"4. Be helpful but strictly realistic about the platform capabilities."
             )
             
-            response = self.model.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message}
-                ],
-                temperature=0.3,
-                max_tokens=300,
-                top_p=0.9
-            )
+            # Use eventlet.tpool to run the blocking API call in a separate thread
+            import eventlet.tpool
+            
+            def call_groq_api():
+                return self.model.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message}
+                    ],
+                    temperature=0.3,
+                    max_tokens=300,
+                    top_p=0.9
+                )
+
+            # Execution is offloaded to thread pool, main loop stays free
+            response = eventlet.tpool.execute(call_groq_api)
             
             ai_text = response.choices[0].message.content.strip()
             return {"response": ai_text, "suggestions": self.get_initial_suggestions(user_role)[:3]}
