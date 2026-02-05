@@ -3,8 +3,7 @@
 {% block title %}{{ service.title }} - SkillVerse{% endblock %}
 
 {% block extra_css %}
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css' rel='stylesheet' media="print"
-    onload="this.media='all'" />
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css' rel='stylesheet' />
 <style>
     .hover-warning:hover,
     .hover-warning:hover~label {
@@ -121,8 +120,7 @@
                 <div class="card border-0 rounded-4 overflow-hidden shadow-sm mb-5 position-relative group">
                     <img src="{{ service.get_image_url() }}" class="img-fluid w-100 object-fit-cover"
                         style="height: 450px;" alt="{{ service.title }}"
-                        onerror="this.src='https://via.placeholder.com/800x450?text=Service+Image'" loading="eager"
-                        decoding="async">
+                        onerror="this.src='https://via.placeholder.com/800x450?text=Service+Image'">
                     <button
                         class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-sm text-danger hover-scale"
                         onclick="toggleFavorite({{ service.id }}, this)">
@@ -486,17 +484,7 @@
                             placeholder="Describe what you need..." required></textarea>
                     </div>
 
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <label class="form-label fw-bold">Deadline</label>
-                            <input type="date" class="form-control bg-light border-0 rounded-3" name="deadline">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-bold">Scope</label>
-                            <input type="text" class="form-control bg-light border-0 rounded-3" name="scope"
-                                placeholder="e.g. 5 Pages">
-                        </div>
-                    </div>
+
                 </div>
                 <div class="modal-footer border-0 p-4 pt-0">
                     <button type="button" class="btn btn-light rounded-pill px-4"

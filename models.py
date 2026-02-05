@@ -401,7 +401,7 @@ class Service(db.Model):
         if self.image_url.startswith('http'):
             return self.image_url
             
-        return url_for('static', filename='uploads/' + self.image_url)
+        return url_for('static', filename='images/' + self.image_url)
 
     def __repr__(self):
         """String representation of Service object"""

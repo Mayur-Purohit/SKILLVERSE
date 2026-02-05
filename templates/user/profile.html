@@ -109,10 +109,10 @@
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-slide-card group">
                             <div class="position-relative overflow-hidden">
-                                <img src="{% if project.image_url %}{{ url_for('static', filename='portfolio/' + project.image_url) }}{% else %}https://via.placeholder.com/400x240?text=Project{% endif %}"
+                                <img src="{% if project.image_url %}{{ url_for('static', filename='portfolio/' + project.image_url) }}{% endif %}"
                                     class="card-img-top object-fit-cover transition-transform duration-500 group-hover-scale"
                                     style="height: 240px;" alt="{{ project.title }}"
-                                    onerror="this.src='https://via.placeholder.com/400x240?text=Project'">>
+                                    onerror="this.style.display='none';">
                                 {% if project.link %}
                                 <div
                                     class="position-absolute top-0 end-0 m-3 opacity-0 group-hover-opacity transition-opacity duration-300">
@@ -153,7 +153,7 @@
                             onclick="window.location.href='{{ url_for('service.detail', service_id=service.id) }}'">
                             <div class="card-image-wrapper">
                                 <img src="{{ service.get_image_url() }}" alt="{{ service.title }}"
-                                    onerror="this.src='https://via.placeholder.com/400x300?text=Service'">
+                                    onerror="this.style.display='none';">
                                 <div class="category-badge">
                                     <i class="bi bi-tag-fill me-1"></i> {{ service.category.name }}
                                 </div>

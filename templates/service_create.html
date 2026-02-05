@@ -99,6 +99,7 @@
                             <div class="mb-5">
                                 <label class="form-label fw-bold small text-muted text-uppercase">Service Image</label>
                                 <div class="bg-light rounded-4 p-4 text-center border border-dashed hover-shadow transition-all position-relative overflow-hidden cursor-pointer"
+                                    style="min-height: 300px; display: flex; align-items: center; justify-content: center;"
                                     onclick="document.getElementById('service-image-input').click()">
                                     <div id="image-placeholder">
                                         <i class="bi bi-cloud-arrow-up text-primary fs-1 mb-2"></i>
@@ -109,8 +110,11 @@
                                         class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover d-none"
                                         alt="Preview">
                                 </div>
-                                <input type="file" class="d-none" name="image" id="service-image-input"
-                                    accept="image/*">
+                                <input type="file" class="form-control position-absolute"
+                                    style="opacity: 0; height: 1px; width: 1px; bottom: 0; left: 50%;" name="image"
+                                    id="service-image-input" accept="image/*" required>
+                                <div class="invalid-feedback text-center" id="image-error-msg">Please select a service
+                                    image to proceed.</div>
                             </div>
 
                             <!-- Submit Buttons -->

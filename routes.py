@@ -598,16 +598,19 @@ def create():
             'tags': request.form.get('tags', '')
         }
         
-        # Handle Image Upload
-        if 'image' in request.files:
-            file = request.files['image']
-            if file and file.filename != '':
+    
+         # Handle Image Upload (Mandatory)
+        if 'image' not in request.files or request.files['image'].filename == '':
+            flash('Please upload a service image to continue.', 'danger')
+            categories = category_manager.get_all_categories()
+            return render_template('service_create.html', categories=categories)
+        
+        file = request.files['image']
+        if file and file.filename != '':
                 filename = save_uploaded_file(file)
                 if filename:
                     data['image_url'] = filename
         
-        if 'image_url' not in data:
-             data['image_url'] = 'default-service.jpg'
         
         # Create service using ServiceManager
         service = service_manager.create_service(current_user.id, data)
@@ -816,9 +819,7 @@ def place_order(service_id):
     service = Service.query.get_or_404(service_id)
     
     requirements = request.form.get('requirements', '')
-    scope = request.form.get('scope', '')
     budget_tier = request.form.get('budget_tier', 'Standard')
-    deadline_str = request.form.get('deadline')
     
     # Calculate order price based on budget tier
     base_price = service.price
@@ -845,15 +846,8 @@ def place_order(service_id):
         flash(f'Insufficient wallet balance! You need ₹{int(order_price)} but have only ₹{int(current_balance)}. Please add ₹{int(shortfall)} to your wallet.', 'danger')
         return redirect(url_for('user.wallet'))
     
-    deadline = None
-    if deadline_str:
-        try:
-            deadline = datetime.strptime(deadline_str, '%Y-%m-%d')
-        except:
-            pass
-    
     # Create order using OrderManager
-    order = order_manager.create_order(service_id, current_user.id, requirements, scope, budget_tier, deadline)
+    order = order_manager.create_order(service_id, current_user.id, requirements, '', budget_tier, None)
     
     if order:
         # =====================================================================

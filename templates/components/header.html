@@ -1,4 +1,83 @@
 <header class="fixed-top transition-all" id="mainHelper">
+    <style>
+        /* Mobile Menu Fixes */
+        @media (max-width: 991.98px) {
+
+            /* FIX: Ensure offcanvas has a solid background and correct z-index */
+            .offcanvas {
+                background-color: var(--card-bg) !important;
+                /* Force solid background using theme variable */
+                z-index: 9999 !important;
+                /* Ensure it's above everything */
+                height: 100vh !important;
+                visibility: visible;
+                /* Ensure it's reachable */
+            }
+
+            .offcanvas-body {
+                background-color: var(--card-bg) !important;
+                /* Double ensure body is opaque */
+            }
+
+            /* Make dropdowns static (expandable) instead of floating absolute */
+            .offcanvas .dropdown-menu {
+                position: static !important;
+                float: none;
+                width: 100% !important;
+                margin-top: 0;
+                background-color: transparent;
+                border: 0;
+                box-shadow: none !important;
+                padding-left: 1rem;
+                padding-right: 0;
+                transform: none !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+
+            .offcanvas .dropdown-menu.show {
+                display: block;
+            }
+
+            /* Stack items in the user menu area */
+            .offcanvas .d-flex.align-items-center.gap-3.mt-3 {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 1rem !important;
+                width: 100%;
+            }
+
+            /* Adjust dropdown toggles to take full width */
+            .offcanvas .dropdown,
+            .offcanvas .dropdown-toggle {
+                width: 100%;
+            }
+
+            .offcanvas .dropdown-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                text-align: left;
+            }
+
+            /* Ensure notification dropdown also behaves nicely */
+            .offcanvas .dropdown-menu[style*="max-height"] {
+                max-height: none !important;
+            }
+
+            /* Make buttons full width */
+            .offcanvas .btn:not(.btn-close):not(.theme-toggle) {
+                width: 100%;
+                text-align: left;
+            }
+
+            /* Ensure user avatar wrapper doesn't break layout */
+            .offcanvas .avatar-wrapper {
+                margin-right: auto;
+            }
+        }
+    </style>
     <nav class="navbar navbar-expand-lg py-3">
         <div class="container">
             <!-- Logo -->

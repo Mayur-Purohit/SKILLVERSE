@@ -46,7 +46,7 @@
                         <span class="input-group-text bg-transparent border-0 ms-2"><i
                                 class="bi bi-search text-muted"></i></span>
                         <input type="text" id="heroSearch" class="form-control border-0 bg-transparent shadow-none"
-                            placeholder="What service are you looking for?" aria-label="Search" autocomplete="off">
+                            placeholder="Search services..." aria-label="Search" autocomplete="off">
                         <button class="btn btn-primary rounded-pill px-4 fw-bold" type="button"
                             id="heroSearchBtn">Search</button>
                     </div>
@@ -233,7 +233,6 @@
                         border-radius: 20px;
                     }
                 </style>
-                </style>
 
                 <!-- Stats -->
                 <div class="row mt-5 pt-4 g-4 fade-in-up delay-500">
@@ -322,8 +321,7 @@
                     <div class="position-relative">
                         <img src="{{ service.get_image_url() }}"
                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&q=80';"
-                            class="w-100 object-fit-cover" style="height: 200px;" alt="{{ service.title }}"
-                            loading="lazy" decoding="async">
+                            class="w-100 object-fit-cover" style="height: 200px;" alt="{{ service.title }}">
 
                         <!-- Favorite Button -->
                         <button type="button"
@@ -363,7 +361,7 @@
                         <div class="d-flex align-items-center mt-auto pt-2 border-top">
                             <img src="{{ service.provider.get_avatar_url() }}"
                                 class="rounded-circle object-fit-cover me-2" style="width: 32px; height: 32px;"
-                                alt="{{ service.provider.username }}" loading="lazy" decoding="async">
+                                alt="{{ service.provider.username }}">
                             <div class="small text-muted text-truncate" style="max-width: 120px;">
                                 By <span class="text-dark fw-medium">{{ service.provider.username }}</span>
                             </div>
