@@ -481,14 +481,14 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // --- 1. CONFIGURATION & SETUP ---
         const orderData = document.getElementById('order-data').dataset;
         const orderId = parseInt(orderData.orderId);
         const currentUserId = parseInt(orderData.currentUserId);
         const partnerId = parseInt(orderData.partnerId);
         const orderStatus = orderData.orderStatus;
-        
+
         const chatContainer = document.getElementById('chat-messages');
         const msgInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
@@ -496,16 +496,17 @@
         const statusTxt = document.getElementById('partner-status-text');
 
         // Scroll to bottom on load
-        if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+        if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
         // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
-        // Use a single, persistent connection with auto-reconnect
+        // Allow default transport negotiation (Polling -> WebSocket) for maximum compatibility
         const socket = io({
-            transports: ['websocket'], // Force WebSocket for speed (no polling fallback)
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
-            reconnectionAttempts: Infinity
+            reconnectionAttempts: Infinity,
+            timeout: 20000,
+            autoConnect: true
         });
 
         // Connection Events
@@ -515,9 +516,9 @@
             socket.emit('join', { order_id: orderId });
             // Immediately check partner status
             socket.emit('check_users_status', { user_ids: [partnerId] });
-            
+
             // UI Feedback
-            if(statusInd) {
+            if (statusInd) {
                 statusInd.className = 'text-secondary';
                 statusInd.innerHTML = '● Connecting...';
             }
@@ -525,7 +526,7 @@
 
         socket.on('disconnect', () => {
             console.log('🔌 Chat Disconnected - Reconnecting...');
-            if(statusInd) {
+            if (statusInd) {
                 statusInd.className = 'text-warning';
                 statusInd.innerHTML = '⚠ Reconnecting...';
             }
@@ -544,15 +545,15 @@
 
         function updateStatusUI(status) {
             if (!statusInd) return;
-            
+
             if (status === 'online') {
                 statusInd.className = 'text-success fw-bold fade-in';
                 statusInd.innerHTML = '● Online';
-                if(statusTxt) statusTxt.textContent = 'Active now';
+                if (statusTxt) statusTxt.textContent = 'Active now';
             } else {
                 statusInd.className = 'text-muted fade-in';
                 statusInd.innerHTML = '● Offline';
-                if(statusTxt) statusTxt.textContent = 'Last seen recently';
+                if (statusTxt) statusTxt.textContent = 'Last seen recently';
             }
         }
 
@@ -565,11 +566,11 @@
             if (!chatContainer) return;
 
             const isMe = parseInt(data.sender_id) === currentUserId;
-            
+
             // Create Message Element
             const msgDiv = document.createElement('div');
             msgDiv.className = `d-flex mb-3 fade-in-up ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
-            
+
             // Avatar for other person
             let avatarHtml = '';
             if (!isMe) {
@@ -593,7 +594,7 @@
             `;
 
             chatContainer.appendChild(msgDiv);
-            
+
             // Smooth Scroll to bottom
             requestAnimationFrame(() => {
                 chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -623,32 +624,32 @@
             msgInput.focus();
 
             // 3. Send to Server
-            socket.emit('send_message', { 
-                order_id: orderId, 
+            socket.emit('send_message', {
+                order_id: orderId,
                 content: content,
-                temp_id: tempId 
+                temp_id: tempId
             });
         }
 
         // Event Listeners
-        if(sendBtn) sendBtn.addEventListener('click', sendMessage);
-        
-        if(msgInput) {
+        if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+
+        if (msgInput) {
             msgInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') sendMessage();
             });
         }
-        
-        
+
+
         // --- 5. CALENDAR LOGIC (Only if needed) ---
         const calendarEl = document.getElementById('bookingCalendar');
         if (calendarEl) {
             const calendarModal = document.getElementById('calendarModal');
             let calendar = null;
 
-            calendarModal.addEventListener('shown.bs.modal', function() {
+            calendarModal.addEventListener('shown.bs.modal', function () {
                 if (calendar) { calendar.render(); return; }
-                
+
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek',
                     headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
@@ -657,14 +658,14 @@
                     slotMaxTime: '22:00:00',
                     allDaySlot: false,
                     events: `/availability/provider/${parseInt(orderData.providerId)}/slots`,
-                    eventClick: function(info) {
+                    eventClick: function (info) {
                         const slotID = info.event.id;
                         document.getElementById('selectedSlotId').value = slotID;
-                        
+
                         // Show Confirmation Modal
-                        const start = info.event.start.toLocaleString([], {weekday: 'short', hour:'2-digit', minute:'2-digit'});
+                        const start = info.event.start.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
                         document.getElementById('selectedTimeDisplay').textContent = start;
-                        
+
                         bootstrap.Modal.getInstance(calendarModal).hide();
                         new bootstrap.Modal(document.getElementById('confirmBookingModal')).show();
                     }
