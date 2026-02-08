@@ -499,8 +499,10 @@
         if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
         // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
-        // Allow default transport negotiation (Polling -> WebSocket) for maximum compatibility
+        // FORCE WebSocket only. Render does not support sticky sessions properly on free tier,
+        // so polling often fails. Eventlet handles this fine.
         const socket = io({
+            transports: ['websocket'],
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
