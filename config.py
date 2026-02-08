@@ -115,10 +115,22 @@ class ProductionConfig(Config):
     SECRET_KEY = os.environ.get('SECRET_KEY')
     
     # Production database (PostgreSQL, MySQL, etc.)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    # Updated Database URI handling
+    uri = os.environ.get('DATABASE_URL')
+    if uri and uri.startswith("postgres://"):
+        uri = uri.replace("postgres://", "postgresql://", 1)
+    
+    SQLALCHEMY_DATABASE_URI = uri
     
     # Disable SQL query logging in production
     SQLALCHEMY_ECHO = False
+    
+    # CRITICAL: Use NullPool for Eventlet workers to prevent blocking/timeouts
+    from sqlalchemy.pool import NullPool
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'poolclass': NullPool,
+    }
 
 
 class TestingConfig(Config):
