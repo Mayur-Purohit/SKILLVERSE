@@ -53,18 +53,18 @@ def create_app(config_name='default'):
     app.config.from_object(config_class)
     
     # Initialize extensions
-    # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
     
-    # Configure SocketIO similar to StudyVerse for Render compatibility
-    # Eventlet worker + threading mode works because of monkey patching
+    # Configure SocketIO for robust Eventlet compatibility
+    # Explicitly using 'eventlet' mode instead of 'threading' for better native support
     socketio.init_app(app, 
-                      async_mode='threading', 
+                      async_mode='eventlet', 
                       ping_timeout=60, 
                       ping_interval=25, 
-                      # Allow polling fallback first, then upgrade
-                      transports=['polling', 'websocket'])
+                      # Allow polling fallback first, then upgrade (Best for Render)
+                      transports=['polling', 'websocket'],
+                      cors_allowed_origins="*")
                       
     oauth.init_app(app)
     mail.init_app(app)
