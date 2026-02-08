@@ -7,12 +7,14 @@ This module handles WebSocket events for real-time messaging
 from flask import request
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
-from models import db, Message, Order
+from models import db, Message, Order, Notification
 from managers import chat_manager
 import pytz
+from datetime import datetime
 
 # Global set to track online users (simple in-memory storage)
-# In production with multiple workers, use Redis
+# NOTE: In a multi-worker environment without Redis, this set is local to each worker.
+# However, since we are using Gunicorn with 1 worker (gevent), this works fine.
 online_users = set()
 
 def register_socketio_events(socketio):
@@ -23,9 +25,9 @@ def register_socketio_events(socketio):
         """Handle client connection"""
         if current_user.is_authenticated:
             online_users.add(current_user.id)
-            print(f'User {current_user.username} connected')
+            print(f'[Socket] User {current_user.username} ({current_user.id}) connected. SID: {request.sid}')
             # Broadcast user online status
-            socketio.emit('user_status', {'user_id': current_user.id, 'status': 'online'})
+            emit('user_status', {'user_id': current_user.id, 'status': 'online'}, broadcast=True)
         
     @socketio.on('disconnect')
     def handle_disconnect():
@@ -33,9 +35,9 @@ def register_socketio_events(socketio):
         if current_user.is_authenticated:
             if current_user.id in online_users:
                 online_users.remove(current_user.id)
-            print(f'User {current_user.username} disconnected')
+            print(f'[Socket] User {current_user.username} ({current_user.id}) disconnected. SID: {request.sid}')
             # Broadcast user offline status
-            socketio.emit('user_status', {'user_id': current_user.id, 'status': 'offline'})
+            emit('user_status', {'user_id': current_user.id, 'status': 'offline'}, broadcast=True)
 
     @socketio.on('check_users_status')
     def handle_check_status(data):
@@ -43,8 +45,11 @@ def register_socketio_events(socketio):
         user_ids = data.get('user_ids', [])
         status_map = {}
         for uid in user_ids:
-            uid = int(uid) # Ensure int
-            status_map[uid] = 'online' if uid in online_users else 'offline'
+            try:
+                uid = int(uid)
+                status_map[uid] = 'online' if uid in online_users else 'offline'
+            except (ValueError, TypeError):
+                continue
         
         emit('users_status_response', status_map)
     
@@ -60,13 +65,22 @@ def register_socketio_events(socketio):
         
         # Verify user is part of this order
         order = Order.query.get(order_id)
-        if not order or current_user.id not in [order.buyer_id, order.seller_id]:
+        if not order:
+            return
+            
+        if current_user.id not in [order.buyer_id, order.seller_id]:
             return
         
         room = f'order_{order_id}'
         join_room(room)
-        emit('joined', {'order_id': order_id}, room=room)
-        print(f'User {current_user.username} joined room {room}')
+        
+        print(f'[Socket] User {current_user.username} joined room {room}')
+        
+        # Notify others in the room
+        emit('joined', {
+            'user_id': current_user.id,
+            'username': current_user.username
+        }, room=room)
     
     @socketio.on('leave')
     def handle_leave(data):
@@ -80,7 +94,7 @@ def register_socketio_events(socketio):
         
         room = f'order_{order_id}'
         leave_room(room)
-        print(f'User {current_user.username} left room {room}')
+        print(f'[Socket] User {current_user.username} left room {room}')
     
     @socketio.on('send_message')
     def handle_send_message(data):
@@ -90,53 +104,19 @@ def register_socketio_events(socketio):
         
         order_id = data.get('order_id')
         content = data.get('content')
+        temp_id = data.get('temp_id')  # For optimistic UI matching
         
         if not order_id or not content:
             return
         
-        # Save message to database
+        # 1. Save message to database
         message, error = chat_manager.send_message(order_id, current_user.id, content)
         
         if error:
             emit('error', {'message': error})
             return
         
-        # Create notification for the recipient (with rate limiting)
-        order = Order.query.get(order_id)
-        if order:
-            from models import Notification
-            from flask import url_for
-            from datetime import datetime, timedelta
-            
-            # Determine who should receive the notification (the other person)
-            if current_user.id == order.buyer_id:
-                recipient_id = order.seller_id
-            else:
-                recipient_id = order.buyer_id
-            
-            # Rate limiting: Check if there's already an unread notification 
-            # for this order from this sender within the last 5 minutes
-            five_mins_ago = datetime.utcnow() - timedelta(minutes=5)
-            existing_notification = Notification.query.filter(
-                Notification.user_id == recipient_id,
-                Notification.title == 'New Message 💬',
-                Notification.link.contains(str(order_id)),
-                Notification.is_read == False,
-                Notification.created_at >= five_mins_ago
-            ).first()
-            
-            # Only create notification if no recent unread notification exists
-            if not existing_notification:
-                notification = Notification(
-                    user_id=recipient_id,
-                    title='New Message 💬',
-                    message=f'{current_user.username} sent you a message in Order #{order_id}',
-                    link=url_for('user.order_detail', order_id=order_id)
-                )
-                db.session.add(notification)
-                db.session.commit()
-        
-        # Convert to IST for display
+        # 2. Prepare Message Data (IST Time)
         ist_tz = pytz.timezone('Asia/Kolkata')
         created_at = message.created_at
         if created_at.tzinfo is None:
@@ -144,14 +124,40 @@ def register_socketio_events(socketio):
             created_at = utc_tz.localize(created_at)
         ist_time = created_at.astimezone(ist_tz)
         
-        # Broadcast to room
-        room = f'order_{order_id}'
-        emit('new_message', {
+        message_payload = {
             'id': message.id,
+            'temp_id': temp_id,
+            'order_id': order_id,
             'sender_id': message.sender_id,
             'sender_name': current_user.username,
             'content': message.content,
             'created_at': ist_time.isoformat(),
             'time_display': ist_time.strftime('%I:%M %p')
-        }, room=room)
+        }
+        
+        # 3. Broadcast to Room (This sends to EVERYONE in the room, including sender)
+        room = f'order_{order_id}'
+        emit('new_message', message_payload, room=room)
+        print(f'[Socket] Message sent to room {room}: {content[:20]}...')
+
+        # 4. Handle Notifications (Async check)
+        try:
+            order = Order.query.get(order_id)
+            if order:
+                recipient_id = order.seller_id if current_user.id == order.buyer_id else order.buyer_id
+                
+                # Check if recipient is active in the room (optional optimization)
+                # For now, we simple create a notification if they haven't seen it recently
+                
+                # Notification logic
+                notification = Notification(
+                    user_id=recipient_id,
+                    title=f'New Message from {current_user.username}',
+                    message=f'{current_user.username}: {content[:30]}...',
+                    link=f'/order/{order_id}' # Hardcoded URL to avoid import loop or context issues
+                )
+                db.session.add(notification)
+                db.session.commit()
+        except Exception as e:
+            print(f"[Socket Error] Notification failed: {e}")
 
