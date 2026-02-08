@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyVerse JavaScript Code - Complete Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 40px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 30px 0 15px 0;
+        }
+
+        .card {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            border-left-color: var(--warning);
+        }
+
+        .success {
+            background: #d1fae5;
+            border-left-color: var(--accent);
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            background: #282c34;
+            color: #61dafb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        ul,
+        ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ StudyVerse JavaScript Documentation</h1>
+            <p>Complete Frontend Code Analysis with Concepts</p>
+        </header>
+
+        <div class="content">
+            <h2>📁 JavaScript Files Overview</h2>
+
+            <div class="card success">
+                <h3>12 JavaScript Files in Our Project:</h3>
+                <ol>
+                    <li><strong>auth.js</strong> - Login/Register form handling</li>
+                    <li><strong>battle.js</strong> - Real-time coding battle arena</li>
+                    <li><strong>chat.js</strong> - AI chatbot interface</li>
+                    <li><strong>group_chat.js</strong> - Group messaging with Socket.IO</li>
+                    <li><strong>main.js</strong> - Global utilities & navbar</li>
+                    <li><strong>particles.js</strong> - Background particle effects</li>
+                    <li><strong>pomodoro.js</strong> - Focus timer with statistics</li>
+                    <li><strong>syllabus.js</strong> - PDF upload & management</li>
+                    <li><strong>timestamp_utils.js</strong> - Time formatting utilities</li>
+                    <li><strong>todos.js</strong> - Task management interface</li>
+                    <li><strong>whiteboard.js</strong> - Collaborative drawing canvas</li>
+                    <li><strong>zen_mode.js</strong> - Distraction-free study mode</li>
+                </ol>
+            </div>
+
+            <h2>🎓 JavaScript Core Concepts</h2>
+
+            <h3>1. DOM Manipulation</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Interacting with HTML elements using JavaScript</p>
+
+                <h4>Selecting Elements:</h4>
+                <pre><code>// Get element by ID
+const chatInput = document.getElementById('chatInput');
+
+// Get element by class (returns first match)
+const card = document.querySelector('.card');
+
+// Get all elements by class
+const allCards = document.querySelectorAll('.card');
+
+// Get elements by tag name
+const buttons = document.getElementsByTagName('button');
+</code></pre>
+
+                <h4>Modifying Elements:</h4>
+                <pre><code>// Change content
+element.textContent = 'New text';
+element.innerHTML = '&lt;strong&gt;Bold text&lt;/strong&gt;';
+
+// Change styles
+element.style.color = 'red';
+element.style.display = 'none';
+
+// Add/remove classes
+element.classList.add('active');
+element.classList.remove('hidden');
+element.classList.toggle('highlighted');
+
+// Change attributes
+element.setAttribute('data-id', '123');
+const value = element.getAttribute('data-id');
+</code></pre>
+            </div>
+
+            <h3>2. Event Handling</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Responding to user interactions (clicks, typing, etc.)</p>
+
+                <pre><code>// Click event
+const button = document.getElementById('submitBtn');
+button.addEventListener('click', function() {
+    console.log('Button clicked!');
+});
+
+// Form submission
+const form = document.getElementById('myForm');
+form.addEventListener('submit', function(event) {
+    event.preventDefault();  // Stop default form submission
+    
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    
+    // Process form data
+    console.log('Email:', email);
+});
+
+// Keyboard events
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        console.log('Enter key pressed');
+    }
+    
+    if (event.ctrlKey && event.key === 's') {
+        event.preventDefault();  // Prevent browser save
+        console.log('Ctrl+S pressed');
+    }
+});
+
+// Input change event
+const input = document.getElementById('searchInput');
+input.addEventListener('input', function(event) {
+    const searchText = event.target.value;
+    console.log('User typed:', searchText);
+});
+</code></pre>
+            </div>
+
+            <h3>3. Asynchronous JavaScript</h3>
+            <div class="card highlight">
+                <h4>Fetch API (AJAX Requests):</h4>
+                <pre><code>// GET request
+fetch('/api/todos')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network error');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Todos:', data);
+        displayTodos(data.todos);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+// POST request
+fetch('/api/todos/create', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        title: 'New Task',
+        category: 'Study',
+        completed: false
+    })
+})
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Todo created!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+</code></pre>
+
+                <h4>Async/Await (Modern Approach):</h4>
+                <pre><code>async function loadTodos() {
+    try {
+        const response = await fetch('/api/todos');
+        
+        if (!response.ok) {
+            throw new Error('Failed to load todos');
+        }
+        
+        const data = await response.json();
+        displayTodos(data.todos);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showErrorMessage('Failed to load tasks');
+    }
+}
+
+// Call the function
+loadTodos();
+</code></pre>
+            </div>
+
+            <h3>4. WebSocket (Real-Time Communication)</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Bidirectional communication for live updates</p>
+
+                <pre><code>// Connect to Socket.IO server
+const socket = io();
+
+// Emit event to server
+socket.emit('send_message', {
+    group_id: 'room123',
+    content: 'Hello everyone!'
+});
+
+// Listen for events from server
+socket.on('receive_message', function(data) {
+    console.log('New message:', data);
+    
+    // Update UI
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = data.content;
+    messagesContainer.appendChild(messageDiv);
+});
+
+// Join a room
+socket.emit('join', {
+    group_id: 'room123'
+});
+
+// Handle disconnection
+socket.on('disconnect', function() {
+    console.log('Disconnected from server');
+    showReconnectingMessage();
+});
+</code></pre>
+            </div>
+
+            <h3>5. Local Storage</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Store data in browser (persists after page reload)</p>
+
+                <pre><code>// Save data
+localStorage.setItem('username', 'JohnDoe');
+localStorage.setItem('theme', 'dark');
+
+// Save object (must stringify)
+const userSettings = {
+    volume: 80,
+    notifications: true,
+    theme: 'dark'
+};
+localStorage.setItem('settings', JSON.stringify(userSettings));
+
+// Retrieve data
+const username = localStorage.getItem('username');
+console.log('Username:', username);  // 'JohnDoe'
+
+// Retrieve object (must parse)
+const settings = JSON.parse(
+    localStorage.getItem('settings')
+);
+console.log('Volume:', settings.volume);  // 80
+
+// Remove item
+localStorage.removeItem('username');
+
+// Clear all
+localStorage.clear();
+
+// Check if exists
+if (localStorage.getItem('theme')) {
+    console.log('Theme is set');
+}
+</code></pre>
+            </div>
+
+            <h2>📝 File-by-File Breakdown</h2>
+
+            <h3>1. auth.js - Authentication Form</h3>
+            <div class="card">
+                <h4>Purpose:</h4>
+                <p>Handles login/register form switching and validation</p>
+
+                <h4>Key Code:</h4>
+                <pre><code>// Tab switching between Login and Register
+const loginTab = document.getElementById('loginTab');
+const registerTab = document.getElementById('registerTab');
+
+loginTab.addEventListener('click', function() {
+    // Show login form
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    
+    // Update active tab styling
+    loginTab.classList.add('active');
+    registerTab.classList.remove('active');
+});
+
+registerTab.addEventListener('click', function() {
+    // Show register form
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    
+    // Update active tab styling
+    registerTab.classList.add('active');
+    loginTab.classList.remove('active');
+});
+
+// Password strength checker
+const passwordInput = document.getElementById('password');
+passwordInput.addEventListener('input', function() {
+    const password = passwordInput.value;
+    let strength = 0;
+    
+    if (password.length &gt;= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    // Update strength indicator
+    updateStrengthIndicator(strength);
+});
+</code></pre>
+            </div>
+
+            <h3>2. chat.js - AI Chatbot</h3>
+            <div class="card">
+                <h4>Purpose:</h4>
+                <p>Handles AI chat interface with markdown rendering</p>
+
+                <h4>Key Code:</h4>
+                <pre><code>const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
+const messagesContainer = document.getElementById('messagesContainer');
+
+chatForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const message = chatInput.value.trim();
+    if (!message) return;
+    
+    // Add user message to UI
+    appendMessage('user', message);
+    chatInput.value = '';
+    
+    // Show loading indicator
+    showLoadingIndicator();
+    
+    try {
+        // Send to AI backend
+        const response = await fetch('/chat/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Add AI response
+            appendMessage('bot', data.reply);
+        } else {
+            appendMessage('bot', 
+                '⚠️ Sorry, I encountered an error.');
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        appendMessage('bot', 
+            '⚠️ Connection error. Please try again.');
+    } finally {
+        hideLoadingIndicator();
+    }
+});
+
+function appendMessage(role, content) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-msg ${role}`;
+    
+    // Parse markdown to HTML
+    const htmlContent = marked.parse(content);
+    messageDiv.innerHTML = htmlContent;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+</code></pre>
+            </div>
+
+            <h3>3. group_chat.js - Real-Time Group Chat</h3>
+            <div class="card success">
+                <h4>Purpose:</h4>
+                <p>WebSocket-based group messaging with file uploads</p>
+
+                <h4>Key Code:</h4>
+                <pre><code>// Initialize Socket.IO connection
+const socket = io();
+const GROUP_ID = "{{ group.id }}";
+
+// Connect to server
+socket.on('connect', function() {
+    console.log('Connected to chat server');
+    
+    // Join group room
+    socket.emit('join', { group_id: GROUP_ID });
+});
+
+// Send message
+const chatForm = document.getElementById('groupChatForm');
+chatForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const messageInput = document.getElementById('groupChatInput');
+    const message = messageInput.value.trim();
+    
+    if (!message) return;
+    
+    // Emit message to server
+    socket.emit('send_message', {
+        group_id: GROUP_ID,
+        content: message,
+        file_path: null
+    });
+    
+    // Clear input
+    messageInput.value = '';
+    
+    // Add temporary message to UI (optimistic update)
+    addMessageToUI({
+        user_id: CURRENT_USER_ID,
+        username: 'You',
+        content: message,
+        created_at: new Date().toLocaleTimeString()
+    });
+});
+
+// Receive messages from server
+socket.on('receive_message', function(data) {
+    console.log('New message received:', data);
+    addMessageToUI(data);
+});
+
+function addMessageToUI(messageData) {
+    const messagesContainer = 
+        document.getElementById('groupMessagesContainer');
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    
+    // Build message HTML
+    messageDiv.innerHTML = `
+        &lt;div class="message-header"&gt;
+            &lt;strong&gt;${messageData.username}&lt;/strong&gt;
+            &lt;span class="time"&gt;${messageData.created_at}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="message-content"&gt;
+            ${messageData.content}
+        &lt;/div&gt;
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+</code></pre>
+            </div>
+
+            <h3>4. pomodoro.js - Focus Timer</h3>
+            <div class="card">
+                <h4>Purpose:</h4>
+                <p>Pomodoro technique timer with session tracking</p>
+
+                <h4>Key Code:</h4>
+                <pre><code>let timerMinutes = 25;
+let timerSeconds = 0;
+let isRunning = false;
+let timerInterval = null;
+let sessionType = 'focus';  // 'focus' or 'break'
+
+const startButton = document.getElementById('startTimer');
+const pauseButton = document.getElementById('pauseTimer');
+const resetButton = document.getElementById('resetTimer');
+const timerDisplay = document.getElementById('timerDisplay');
+
+startButton.addEventListener('click', function() {
+    if (!isRunning) {
+        isRunning = true;
+        
+        timerInterval = setInterval(function() {
+            // Countdown logic
+            if (timerSeconds === 0) {
+                if (timerMinutes === 0) {
+                    // Timer finished
+                    handleTimerComplete();
+                    return;
+                }
+                timerMinutes--;
+                timerSeconds = 59;
+            } else {
+                timerSeconds--;
+            }
+            
+            // Update display
+            updateTimerDisplay();
+            
+        }, 1000);  // Run every second
+        
+        // Update button states
+        startButton.disabled = true;
+        pauseButton.disabled = false;
+    }
+});
+
+pauseButton.addEventListener('click', function() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    
+    startButton.disabled = false;
+    pauseButton.disabled = true;
+});
+
+function updateTimerDisplay() {
+    const mins = String(timerMinutes).padStart(2, '0');
+    const secs = String(timerSeconds).padStart(2, '0');
+    timerDisplay.textContent = `${mins}:${secs}`;
+}
+
+async function handleTimerComplete() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    
+    // Play notification sound
+    const audio = new Audio('/static/sounds/bell.mp3');
+    audio.play();
+    
+    // Show notification
+    if ('Notification' in window) {
+        new Notification('Pomodoro Complete!', {
+            body: sessionType === 'focus' 
+                ? 'Great work! Time for a break.' 
+                : 'Break over! Ready to focus?',
+            icon: '/static/img/logo.png'
+        });
+    }
+    
+    // Save session to backend
+    await fetch('/pomodoro/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            duration: sessionType === 'focus' ? 25 : 5,
+            type: sessionType
+        })
+    });
+    
+    // Switch session type
+    if (sessionType === 'focus') {
+        sessionType = 'break';
+        timerMinutes = 5;
+    } else {
+        sessionType = 'focus';
+        timerMinutes = 25;
+    }
+    timerSeconds = 0;
+    updateTimerDisplay();
+}
+</code></pre>
+            </div>
+
+            <h3>5. whiteboard.js - Collaborative Canvas</h3>
+            <div class="card">
+                <h4>Purpose:</h4>
+                <p>HTML5 Canvas drawing with real-time sync</p>
+
+                <h4>Key Code:</h4>
+                <pre><code>const canvas = document.getElementById('whiteboard');
+const ctx = canvas.getContext('2d');
+
+let isDrawing = false;
+let currentColor = '#000000';
+let lineWidth = 2;
+
+// Resize canvas to container
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Drawing event handlers
+canvas.addEventListener('mousedown', function(event) {
+    isDrawing = true;
+    
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+});
+
+canvas.addEventListener('mousemove', function(event) {
+    if (!isDrawing) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    
+    // Emit drawing to other users via WebSocket
+    socket.emit('draw', {
+        group_id: GROUP_ID,
+        x: x,
+        y: y,
+        color: currentColor,
+        width: lineWidth
+    });
+});
+
+canvas.addEventListener('mouseup', function() {
+    isDrawing = false;
+});
+
+// Receive drawings from others
+socket.on('receive_draw', function(data) {
+    ctx.lineTo(data.x, data.y);
+    ctx.strokeStyle = data.color;
+    ctx.lineWidth = data.width;
+    ctx.stroke();
+});
+
+// Color picker
+document.getElementById('wb-color')
+    .addEventListener('change', function(event) {
+        currentColor = event.target.value;
+    });
+
+// Clear canvas
+document.getElementById('wb-clear')
+    .addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Notify others to clear
+        socket.emit('clear_board', { group_id: GROUP_ID });
+    });
+</code></pre>
+            </div>
+
+            <h2>🎯 Advanced JavaScript Concepts</h2>
+
+            <h3>1. Arrow Functions vs Regular Functions</h3>
+            <div class="card">
+                <pre><code>// Regular function
+function greet(name) {
+    return 'Hello, ' + name;
+}
+
+// Arrow function (shorter syntax)
+const greet = (name) => {
+    return 'Hello, ' + name;
+};
+
+// Arrow function (implicit return)
+const greet = (name) => 'Hello, ' + name;
+
+// Example in event listener
+button.addEventListener('click', function() {
+    console.log('Regular function');
+});
+
+button.addEventListener('click', () => {
+    console.log('Arrow function');
+});
+</code></pre>
+            </div>
+
+            <h3>2. Array Methods</h3>
+            <div class="card">
+                <pre><code>const todos = [
+    { id: 1, title: 'Study', completed: false },
+    { id: 2, title: 'Code', completed: true },
+    { id: 3, title: 'Exercise', completed: false }
+];
+
+// Filter - get completed todos
+const completed = todos.filter(todo => todo.completed);
+// Result: [{ id: 2, title: 'Code', completed: true }]
+
+// Map - extract titles
+const titles = todos.map(todo => todo.title);
+// Result: ['Study', 'Code', 'Exercise']
+
+// Find - get specific todo
+const todo = todos.find(t => t.id === 2);
+// Result: { id: 2, title: 'Code', completed: true }
+
+// ForEach - iterate through all
+todos.forEach(todo => {
+    console.log(todo.title);
+});
+
+// Some - check if any match condition
+const hasCompleted = todos.some(t => t.completed);
+// Result: true
+
+// Every - check if all match condition
+const allCompleted = todos.every(t => t.completed);
+// Result: false
+</code></pre>
+            </div>
+
+            <h3>3. Template Literals</h3>
+            <div class="card">
+                <pre><code>const name = 'John';
+const age = 25;
+
+// Old way (concatenation)
+const message = 'Hello, ' + name + '! You are ' + age + ' years old.';
+
+// New way (template literals)
+const message = `Hello, ${name}! You are ${age} years old.`;
+
+// Multi-line strings
+const html = `
+    &lt;div class="user-card"&gt;
+        &lt;h3&gt;${name}&lt;/h3&gt;
+        &lt;p&gt;Age: ${age}&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Expressions inside templates
+const total = `Total: ${price * quantity}`;
+const greeting = `Hello, ${user.isAdmin ? 'Admin' : 'User'}!`;
+</code></pre>
+            </div>
+
+            <h3>4. Destructuring</h3>
+            <div class="card">
+                <pre><code>// Object destructuring
+const user = {
+    name: 'John',
+    email: 'john@example.com',
+    age: 25
+};
+
+// Extract properties
+const { name, email } = user;
+console.log(name);   // 'John'
+console.log(email);  // 'john@example.com'
+
+// Array destructuring
+const colors = ['red', 'green', 'blue'];
+const [first, second, third] = colors;
+console.log(first);   // 'red'
+console.log(second);  // 'green'
+
+// Function parameters
+function displayUser({ name, age }) {
+    console.log(`${name} is ${age} years old`);
+}
+displayUser(user);  // 'John is 25 years old'
+</code></pre>
+            </div>
+
+            <h2>❓ Faculty Questions & Answers</h2>
+
+            <h3>Q1: What is the difference between var, let, and const?</h3>
+            <div class="card highlight">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Keyword</th>
+                            <th>Scope</th>
+                            <th>Reassign</th>
+                            <th>Hoisting</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>var</code></td>
+                            <td>Function scope</td>
+                            <td>Yes</td>
+                            <td>Yes (undefined)</td>
+                        </tr>
+                        <tr>
+                            <td><code>let</code></td>
+                            <td>Block scope</td>
+                            <td>Yes</td>
+                            <td>No (ReferenceError)</td>
+                        </tr>
+                        <tr>
+                            <td><code>const</code></td>
+                            <td>Block scope</td>
+                            <td>No</td>
+                            <td>No (ReferenceError)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>Best Practice:</strong> Use <code>const</code> by default, <code>let</code> when reassignment
+                    needed, avoid <code>var</code></p>
+            </div>
+
+            <h3>Q2: How does asynchronous JavaScript work?</h3>
+            <div class="card">
+                <p><strong>Answer: Event Loop & Call Stack</strong></p>
+
+                <h4>Synchronous (Blocking):</h4>
+                <pre><code>console.log('1');
+console.log('2');
+console.log('3');
+// Output: 1, 2, 3 (in order)
+</code></pre>
+
+                <h4>Asynchronous (Non-Blocking):</h4>
+                <pre><code>console.log('1');
+
+setTimeout(() => {
+    console.log('2');
+}, 1000);
+
+console.log('3');
+// Output: 1, 3, 2 (after 1 second)
+</code></pre>
+
+                <p><strong>Why?</strong> setTimeout is async - doesn't block execution!</p>
+            </div>
+
+            <h3>Q3: What is the DOM and why is it important?</h3>
+            <div class="card success">
+                <p><strong>Answer: Document Object Model</strong></p>
+
+                <ul>
+                    <li><strong>Definition:</strong> Tree-like representation of HTML</li>
+                    <li><strong>Purpose:</strong> Allows JavaScript to modify page content</li>
+                    <li><strong>Structure:</strong> Document → HTML → Body → Elements</li>
+                </ul>
+
+                <p><strong>Without DOM:</strong> Static HTML, no interactivity</p>
+                <p><strong>With DOM:</strong> Dynamic updates, user interactions, animations</p>
+            </div>
+
+            <h3>Q4: How does WebSocket differ from HTTP?</h3>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>HTTP</th>
+                            <th>WebSocket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Connection</td>
+                            <td>Request → Response → Close</td>
+                            <td>Persistent connection</td>
+                        </tr>
+                        <tr>
+                            <td>Direction</td>
+                            <td>Client → Server only</td>
+                            <td>Bidirectional</td>
+                        </tr>
+                        <tr>
+                            <td>Real-time</td>
+                            <td>No (need polling)</td>
+                            <td>Yes (instant updates)</td>
+                        </tr>
+                        <tr>
+                            <td>Use Case</td>
+                            <td>Page loads, API calls</td>
+                            <td>Chat, notifications, live data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>📊 Summary</h2>
+
+            <div class="card success">
+                <h3>JavaScript Concepts Covered:</h3>
+                <ul>
+                    <li>✅ DOM Manipulation - Selecting & modifying HTML elements</li>
+                    <li>✅ Event Handling - Responding to user interactions</li>
+                    <li>✅ Async Programming - Fetch API, Promises, Async/Await</li>
+                    <li>✅ WebSocket - Real-time bidirectional communication</li>
+                    <li>✅ Local Storage - Browser data persistence</li>
+                    <li>✅ Canvas API - Drawing and graphics</li>
+                    <li>✅ Arrow Functions - Modern syntax</li>
+                    <li>✅ Array Methods - Map, Filter, Reduce</li>
+                    <li>✅ Template Literals - String interpolation</li>
+                    <li>✅ Destructuring - Clean object/array access</li>
+                </ul>
+            </div>
+
+            <div class="card" style="text-align: center; margin-top: 40px; padding: 40px;">
+                <h2>⚡ End of Documentation</h2>
+                <p style="margin-top: 15px; font-size: 1.1rem;">
+                    <strong>StudyVerse Project</strong> • JavaScript Code Analysis
+                </p>
+                <p style="margin-top: 10px; color: var(--secondary);">
+                    12 JavaScript files with modern ES6+ features
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

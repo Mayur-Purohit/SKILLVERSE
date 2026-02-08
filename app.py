@@ -53,12 +53,26 @@ def create_app(config_name='default'):
     app.config.from_object(config_class)
     
     # Initialize extensions
+    # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-    socketio.init_app(app)
+    
+    # Configure SocketIO similar to StudyVerse for Render compatibility
+    # Eventlet worker + threading mode works because of monkey patching
+    socketio.init_app(app, 
+                      async_mode='threading', 
+                      ping_timeout=60, 
+                      ping_interval=25, 
+                      # Allow polling fallback first, then upgrade
+                      transports=['polling', 'websocket'])
+                      
     oauth.init_app(app)
     mail.init_app(app)
     compress.init_app(app)
+
+    # Fix for Render (Reverse Proxy) - Critical for HTTPS/WSS
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     # Performance: Cache Static Files for 1 Year
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000

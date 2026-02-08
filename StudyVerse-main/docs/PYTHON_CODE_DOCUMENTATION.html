@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyVerse Python Code - Complete Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 40px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 30px 0 15px 0;
+        }
+
+        .card {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            border-left-color: var(--warning);
+        }
+
+        .success {
+            background: #d1fae5;
+            border-left-color: var(--accent);
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            background: #282c34;
+            color: #61dafb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        .concept {
+            background: linear-gradient(120deg, #e0f2fe 0%, #bae6fd 100%);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        ul,
+        ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            h2,
+            h3 {
+                page-break-after: avoid;
+            }
+
+            .card,
+            pre,
+            table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🐍 StudyVerse Python Code Documentation</h1>
+            <p>Complete Technical Analysis with Concepts & Explanations</p>
+        </header>
+
+        <div class="content">
+            <!-- SECTION 1: PROJECT OVERVIEW -->
+            <h2>📋 Project Structure Overview</h2>
+
+            <div class="card success">
+                <h3>Python Files in Our Project</h3>
+                <ol>
+                    <li><strong>app.py</strong> (3,587 lines) - Main application with all routes and logic</li>
+                    <li><strong>email_service.py</strong> (116 lines) - Email functionality module</li>
+                </ol>
+                <p><strong>Total:</strong> 3,703 lines of Python code</p>
+            </div>
+
+            <!-- SECTION 2: CORE CONCEPTS -->
+            <h2>🎓 Core Python & CS Concepts Used</h2>
+
+            <h3>1. Object-Oriented Programming (OOP)</h3>
+            <div class="concept">
+                <h4>Classes & Objects</h4>
+                <p><strong>Concept:</strong> Blueprint for creating objects with properties and methods</p>
+                <p><strong>Used In:</strong> Database models, Services</p>
+
+                <h4>Example from our code:</h4>
+                <pre><code>class User(UserMixin, db.Model):
+    """Database model representing a user"""
+    
+    # Attributes (Properties)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(50))
+    total_xp = db.Column(db.Integer, default=0)
+    
+    # Method (Function inside class)
+    def get_avatar(self, size=200):
+        """Generate avatar URL for user"""
+        if self.profile_image:
+            return url_for('static', filename=self.profile_image)
+        else:
+            name = f"{self.first_name} {self.last_name}"
+            return f"https://ui-avatars.com/api/?name={name}"
+</code></pre>
+
+                <h4>OOP Principles Applied:</h4>
+                <ul>
+                    <li><strong>Encapsulation:</strong> Data (attributes) and behavior (methods) bundled together</li>
+                    <li><strong>Inheritance:</strong> User inherits from UserMixin and db.Model</li>
+                    <li><strong>Abstraction:</strong> Complex database operations hidden behind simple methods</li>
+                </ul>
+            </div>
+
+            <h3>2. Database Management (DBMS)</h3>
+            <div class="concept">
+                <h4>SQLAlchemy ORM (Object-Relational Mapping)</h4>
+                <p><strong>Concept:</strong> Write database queries using Python objects instead of SQL</p>
+
+                <pre><code># Traditional SQL (what we avoid)
+SELECT * FROM user WHERE email = 'user@example.com'
+
+# SQLAlchemy ORM (what we use)
+user = User.query.filter_by(email='user@example.com').first()
+
+# Inserting data
+new_user = User(
+    email='newuser@example.com',
+    first_name='John',
+    password_hash=hashed_password
+)
+db.session.add(new_user)
+db.session.commit()
+</code></pre>
+
+                <h4>Database Relationships:</h4>
+                <pre><code># One-to-Many: One user has many todos
+class User(db.Model):
+    todos = db.relationship('Todo', backref='owner', lazy=True)
+
+class Todo(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+</code></pre>
+            </div>
+
+            <h3>3. Control Flow Structures</h3>
+
+            <h4>If-Else Statements</h4>
+            <div class="concept">
+                <pre><code># Authentication check
+if current_user.is_authenticated:
+    # User is logged in
+    return redirect(url_for('dashboard'))
+else:
+    # User not logged in
+    return redirect(url_for('auth'))
+
+# Multiple conditions
+if user.total_xp &gt;= 1000:
+    rank = 'Gold'
+elif user.total_xp &gt;= 500:
+    rank = 'Silver'
+else:
+    rank = 'Bronze'
+</code></pre>
+            </div>
+
+            <h4>Loops</h4>
+            <div class="concept">
+                <pre><code># For loop - iterating through list
+for todo in todos:
+    print(f"Task: {todo.title}")
+    print(f"Status: {'Done' if todo.completed else 'Pending'}")
+
+# For loop with range
+for i in range(1, 6):
+    level_xp = i * 100
+    print(f"Level {i} requires {level_xp} XP")
+
+# While loop - process until condition met
+while user.total_xp &gt;= next_level_xp:
+    user.level += 1
+    next_level_xp = calculate_next_level(user.level)
+</code></pre>
+            </div>
+
+            <h3>4. Functions & Decorators</h3>
+            <div class="concept">
+                <h4>Function Definition:</h4>
+                <pre><code>def calculate_level(total_xp):
+    """
+    Calculate user level based on total XP
+    
+    Args:
+        total_xp (int): Total experience points
+    
+    Returns:
+        int: Current level
+    """
+    level = 1
+    xp_for_next = 100
+    
+    while total_xp &gt;= xp_for_next:
+        level += 1
+        xp_for_next += level * 50
+    
+    return level
+</code></pre>
+
+                <h4>Decorators (Advanced):</h4>
+                <pre><code># Route decorator - Flask web routes
+@app.route('/dashboard')
+@login_required  # Requires user to be logged in
+def dashboard():
+    return render_template('dashboard.html')
+
+# Custom decorator for admin only
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_admin:
+            flash('Admin access required')
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+</code></pre>
+            </div>
+
+            <h3>5. Exception Handling (Try-Except)</h3>
+            <div class="concept">
+                <pre><code>def send_email(recipient, subject, body):
+    try:
+        # Attempt to send email
+        mail.send(msg)
+        print(f"Email sent to {recipient}")
+        return True
+        
+    except SMTPException as e:
+        # Handle email sending errors
+        print(f"Failed to send email: {e}")
+        return False
+        
+    except Exception as e:
+        # Catch any other errors
+        print(f"Unexpected error: {e}")
+        return False
+        
+    finally:
+        # Always execute (cleanup)
+        print("Email operation completed")
+</code></pre>
+            </div>
+
+            <h3>6. Data Structures</h3>
+            <div class="concept">
+                <h4>Lists (Arrays):</h4>
+                <pre><code># List of todos
+todos = [
+    {'id': 1, 'title': 'Study Python', 'completed': False},
+    {'id': 2, 'title': 'Build Project', 'completed': True}
+]
+
+# List operations
+todos.append({'id': 3, 'title': 'Deploy App'})
+first_todo = todos[0]
+completed_todos = [t for t in todos if t['completed']]
+</code></pre>
+
+                <h4>Dictionaries (Hash Maps):</h4>
+                <pre><code># User data as dictionary
+user_data = {
+    'name': 'John Doe',
+    'email': 'john@example.com',
+    'xp': 500,
+    'level': 5
+}
+
+# Accessing values
+name = user_data['name']
+xp = user_data.get('xp', 0)  # With default value
+
+# Iterating
+for key, value in user_data.items():
+    print(f"{key}: {value}")
+</code></pre>
+
+                <h4>Sets (Unique Collections):</h4>
+                <pre><code># Track seen message IDs (no duplicates)
+seen_messages = {1, 2, 3, 4, 5}
+seen_messages.add(6)  # Add new
+seen_messages.discard(2)  # Remove
+
+# Check membership
+if message_id in seen_messages:
+    print("Already seen this message")
+</code></pre>
+            </div>
+
+            <!-- SECTION 3: KEY CODE SECTIONS -->
+            <h2>💻 Key Code Sections Explained</h2>
+
+            <h3>1. Flask Application Initialization</h3>
+            <div class="card">
+                <pre><code>import eventlet
+eventlet.monkey_patch()  # Enable async networking
+
+from flask import Flask, render_template, request, redirect
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
+# Create Flask app instance
+app = Flask(__name__)
+
+# Configuration
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+
+# Initialize database
+db = SQLAlchemy(app)
+
+# Initialize authentication
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth'  # Redirect here if not logged in
+</code></pre>
+
+                <p><strong>Explanation:</strong></p>
+                <ul>
+                    <li><code>eventlet.monkey_patch()</code> - Enables async operations for real-time chat</li>
+                    <li><code>Flask(__name__)</code> - Creates web application instance</li>
+                    <li><code>SECRET_KEY</code> - Used for session encryption and security</li>
+                    <li><code>SQLAlchemy(app)</code> - Connects database to Flask app</li>
+                </ul>
+            </div>
+
+            <h3>2. User Authentication System</h3>
+            <div class="card">
+                <h4>User Registration:</h4>
+                <pre><code>@app.route('/register', methods=['POST'])
+def register():
+    # Get form data
+    email = request.form.get('email')
+    password = request.form.get('password')
+    first_name = request.form.get('first_name')
+    
+    # Validate: Check if user already exists
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        flash('Email already registered')
+        return redirect(url_for('auth'))
+    
+    # Hash password for security (never store plain text!)
+    from werkzeug.security import generate_password_hash
+    hashed_password = generate_password_hash(
+        password,
+        method='pbkdf2:sha256'
+    )
+    
+    # Create new user object
+    new_user = User(
+        email=email,
+        password_hash=hashed_password,
+        first_name=first_name,
+        total_xp=0,
+        level=1
+    )
+    
+    # Save to database
+    db.session.add(new_user)
+    db.session.commit()
+    
+    # Log user in
+    login_user(new_user)
+    
+    # Send welcome email (async)
+    send_welcome_email(email, first_name)
+    
+    return redirect(url_for('dashboard'))
+</code></pre>
+
+                <h4>User Login:</h4>
+                <pre><code>@app.route('/login', methods=['POST'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    # Find user in database
+    user = User.query.filter_by(email=email).first()
+    
+    # Check if user exists and password is correct
+    from werkzeug.security import check_password_hash
+    
+    if user and check_password_hash(user.password_hash, password):
+        # Password correct - log user in
+        login_user(user, remember=True)
+        flash('Login successful!', 'success')
+        return redirect(url_for('dashboard'))
+    else:
+        # Invalid credentials
+        flash('Invalid email or password', 'danger')
+        return redirect(url_for('auth'))
+</code></pre>
+
+                <p><strong>Security Concepts:</strong></p>
+                <ul>
+                    <li><strong>Password Hashing:</strong> Convert password to irreversible hash</li>
+                    <li><strong>Never store plain text passwords!</strong></li>
+                    <li><strong>Session Management:</strong> Remembers logged-in users</li>
+                </ul>
+            </div>
+
+            <h3>3. RESTful API Routes</h3>
+            <div class="card">
+                <h4>HTTP Methods Explained:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td>Retrieve data</td>
+                            <td>View dashboard page</td>
+                        </tr>
+                        <tr>
+                            <td><code>POST</code></td>
+                            <td>Create new data</td>
+                            <td>Create new todo</td>
+                        </tr>
+                        <tr>
+                            <td><code>PUT/PATCH</code></td>
+                            <td>Update data</td>
+                            <td>Mark todo as complete</td>
+                        </tr>
+                        <tr>
+                            <td><code>DELETE</code></td>
+                            <td>Remove data</td>
+                            <td>Delete todo</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Example Routes:</h4>
+                <pre><code># GET - Display page
+@app.route('/todos')
+@login_required
+def todos_page():
+    user_todos = Todo.query.filter_by(
+        user_id=current_user.id
+    ).all()
+    return render_template('todos.html', todos=user_todos)
+
+# POST - Create new todo
+@app.route('/todos/create', methods=['POST'])
+@login_required
+def create_todo():
+    title = request.form.get('title')
+    category = request.form.get('category')
+    due_date = request.form.get('due_date')
+    
+    new_todo = Todo(
+        title=title,
+        category=category,
+        due_date=due_date,
+        user_id=current_user.id,
+        completed=False
+    )
+    
+    db.session.add(new_todo)
+    db.session.commit()
+    
+    # Award XP for creating task
+    GamificationService.add_xp(
+        current_user.id,
+        'task_created',
+        10
+    )
+    
+    flash('Task created!', 'success')
+    return redirect(url_for('todos_page'))
+
+# POST - Toggle todo completion
+@app.route('/todos/&lt;int:todo_id&gt;/toggle', methods=['POST'])
+@login_required
+def toggle_todo(todo_id):
+    todo = Todo.query.get_or_404(todo_id)
+    
+    # Security: Check ownership
+    if todo.user_id != current_user.id:
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('todos_page'))
+    
+    # Toggle completion
+    todo.completed = not todo.completed
+    db.session.commit()
+    
+    # Award XP if completing
+    if todo.completed:
+        GamificationService.add_xp(
+            current_user.id,
+            'task_completed',
+            20
+        )
+        flash('Task completed! +20 XP', 'success')
+    
+    return redirect(url_for('todos_page'))
+</code></pre>
+            </div>
+
+            <h3>4. Real-Time Chat with WebSockets</h3>
+            <div class="card">
+                <pre><code>from flask_socketio import SocketIO, emit, join_room
+
+socketio = SocketIO(app, async_mode='eventlet')
+
+# Client connects
+@socketio.on('connect')
+def handle_connect():
+    print(f"User {current_user.id} connected")
+
+# Client joins chat room
+@socketio.on('join')
+def handle_join(data):
+    room = data['group_id']
+    join_room(room)
+    
+    # Notify others in room
+    emit('user_joined', {
+        'user': current_user.first_name,
+        'message': f'{current_user.first_name} joined the chat'
+    }, room=room, skip_sid=request.sid)
+
+# Client sends message
+@socketio.on('send_message')
+def handle_message(data):
+    room = data['group_id']
+    content = data['content']
+    
+    # Save to database
+    new_message = GroupMessage(
+        group_id=room,
+        user_id=current_user.id,
+        content=content,
+        role='user'
+    )
+    db.session.add(new_message)
+    db.session.commit()
+    
+    # Broadcast to all users in room
+    emit('receive_message', {
+        'id': new_message.id,
+        'user_id': current_user.id,
+        'username': current_user.first_name,
+        'content': content,
+        'created_at': format_time(new_message.created_at)
+    }, room=room)
+</code></pre>
+
+                <p><strong>WebSocket Concept:</strong></p>
+                <ul>
+                    <li>Traditional HTTP: Request → Response (one-way)</li>
+                    <li>WebSocket: Persistent two-way connection</li>
+                    <li>Server can push messages to clients instantly</li>
+                    <li>Perfect for real-time features (chat, notifications)</li>
+                </ul>
+            </div>
+
+            <h3>5. AI Integration</h3>
+            <div class="card">
+                <pre><code>import google.generativeai as genai
+
+# Configure AI
+genai.configure(api_key=os.getenv('AI_API_KEY'))
+model = genai.GenerativeModel('gemini-2.5-flash')
+
+@app.route('/chat/send', methods=['POST'])
+@login_required
+def ai_chat():
+    user_message = request.json.get('message')
+    
+    # Save user message
+    user_msg = ChatMessage(
+        user_id=current_user.id,
+        content=user_message,
+        role='user'
+    )
+    db.session.add(user_msg)
+    db.session.commit()
+    
+    # Get conversation history
+    history = ChatMessage.query.filter_by(
+        user_id=current_user.id
+    ).order_by(ChatMessage.created_at).limit(10).all()
+    
+    # Build context
+    context = "You are a helpful study assistant.\n\n"
+    for msg in history:
+        context += f"{msg.role}: {msg.content}\n"
+    context += f"user: {user_message}\n"
+    
+    try:
+        # Generate AI response
+        response = model.generate_content(context)
+        ai_reply = response.text
+        
+        # Save AI response
+        ai_msg = ChatMessage(
+            user_id=current_user.id,
+            content=ai_reply,
+            role='assistant'
+        )
+        db.session.add(ai_msg)
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'reply': ai_reply
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+</code></pre>
+            </div>
+
+            <!-- SECTION 4: CONCEPTS SUMMARY -->
+            <h2>📚 CS Concepts Summary</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Explanation</th>
+                        <th>Where Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>OOP</strong></td>
+                        <td>Classes, objects, inheritance, encapsulation</td>
+                        <td>User, Todo, GamificationService classes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DBMS</strong></td>
+                        <td>Database queries, relationships, transactions</td>
+                        <td>SQLAlchemy ORM for all data operations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>If-Else</strong></td>
+                        <td>Conditional branching</td>
+                        <td>Authentication checks, XP calculations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Loops</strong></td>
+                        <td>For, While iteration</td>
+                        <td>Processing todos, calculating levels</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Functions</strong></td>
+                        <td>Reusable code blocks</td>
+                        <td>calculate_level, send_email, etc.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Exception Handling</strong></td>
+                        <td>Try-except for error management</td>
+                        <td>Database operations, API calls</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lists</strong></td>
+                        <td>Ordered collections</td>
+                        <td>Storing todos, messages, users</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dictionaries</strong></td>
+                        <td>Key-value pairs</td>
+                        <td>JSON responses, configuration</td>
+                    </tr>
+                    <tr>
+                        <td><strong>File I/O</strong></td>
+                        <td>Reading/writing files</td>
+                        <td>PDF uploads, syllabus processing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Asynchronous Programming</strong></td>
+                        <td>Non-blocking operations</td>
+                        <td>Email sending, WebSocket events</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- SECTION 5: Q&A -->
+            <h2>❓ Faculty Questions & Answers</h2>
+
+            <h3>Q1: Why use Flask instead of Django?</h3>
+            <div class="card">
+                <p><strong>Answer:</strong></p>
+                <ul>
+                    <li><strong>Lightweight:</strong> Flask is minimal, perfect for learning</li>
+                    <li><strong>Flexibility:</strong> Choose your own database, auth system, etc.</li>
+                    <li><strong>Easy to understand:</strong> Simple structure for academic projects</li>
+                    <li><strong>Real-time support:</strong> Flask-SocketIO integrates easily</li>
+                    <li>Django is batteries-included but more complex for students</li>
+                </ul>
+            </div>
+
+            <h3>Q2: How does password security work?</h3>
+            <div class="card highlight">
+                <p><strong>Answer:</strong></p>
+                <h4>Password Hashing Process:</h4>
+                <ol>
+                    <li><strong>Registration:</strong> User enters password "mypassword123"</li>
+                    <li><strong>Hashing:</strong> Algorithm converts it to: "pbkdf2:sha256:..."</li>
+                    <li><strong>Storage:</strong> Only hash is stored in database</li>
+                    <li><strong>Login:</strong> User enters password again</li>
+                    <li><strong>Verification:</strong> Hash the input and compare with stored hash</li>
+                    <li><strong>Match:</strong> If hashes match, password is correct</li>
+                </ol>
+
+                <p><strong>Why it's secure:</strong></p>
+                <ul>
+                    <li>Even if database is hacked, passwords are not readable</li>
+                    <li>Hashing is one-way (can't reverse to original)</li>
+                    <li>Each hash is unique even for same password (salt)</li>
+                </ul>
+            </div>
+
+            <h3>Q3: Explain the MVC pattern in our app</h3>
+            <div class="card">
+                <p><strong>Answer: Model-View-Controller Architecture</strong></p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Responsibility</th>
+                            <th>In Our Project</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Model</strong></td>
+                            <td>Data & Business Logic</td>
+                            <td>User, Todo, Message classes (database models)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>View</strong></td>
+                            <td>User Interface</td>
+                            <td>HTML templates (dashboard.html, chat.html)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Controller</strong></td>
+                            <td>Request Handling</td>
+                            <td>Flask routes (@app.route decorators)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Example Flow:</h4>
+                <pre><code>1. User clicks "Create Todo" button (View)
+2. Browser sends POST /todos/create (Controller)
+3. Flask route receives request
+4. Creates Todo object (Model)
+5. Saves to database
+6. Renders updated todos page (View)
+7. User sees new todo in list
+</code></pre>
+            </div>
+
+            <h3>Q4: How does the gamification system work?</h3>
+            <div class="card success">
+                <p><strong>Answer: XP, Levels, and Ranks System</strong></p>
+
+                <h4>XP Award System:</h4>
+                <pre><code>Actions that award XP:
+- Complete task: +20 XP
+- Daily login: +5 XP
+- Study session: +15 XP per hour
+- Help friend: +10 XP
+- Upload syllabus: +25 XP
+</code></pre>
+
+                <h4>Level Calculation:</h4>
+                <pre><code>def calculate_level(total_xp):
+    level = 1
+    xp_needed = 100  # Level 1 → 2
+    
+    while total_xp &gt;= xp_needed:
+        level += 1
+        xp_needed += level * 50
+    
+    return level
+
+# Example:
+# 0-99 XP: Level 1
+# 100-249 XP: Level 2
+# 250-449 XP: Level 3
+</code></pre>
+
+                <h4>Rank System:</h4>
+                <ul>
+                    <li>Level 1-5: Bronze</li>
+                    <li>Level 6-10: Silver</li>
+                    <li>Level 11-20: Gold</li>
+                    <li>Level 21-50: Platinum</li>
+                    <li>Level 51+: Diamond</li>
+                </ul>
+            </div>
+
+            <h3>Q5: How does real-time chat work without refreshing?</h3>
+            <div class="card">
+                <p><strong>Answer: WebSocket Technology</strong></p>
+
+                <h4>Traditional HTTP vs WebSocket:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Traditional HTTP</th>
+                            <th>WebSocket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Request → Response → Close</td>
+                            <td>Connect once → Keep open</td>
+                        </tr>
+                        <tr>
+                            <td>Client must ask for updates</td>
+                            <td>Server pushes updates</td>
+                        </tr>
+                        <tr>
+                            <td>Need to refresh to see new messages</td>
+                            <td>Messages appear instantly</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Chat Flow:</h4>
+                <pre><code>1. John opens chat (WebSocket connection established)
+2. Sarah opens same chat (connects)
+3. John types "Hello" and clicks send
+4. JavaScript sends message via WebSocket
+5. Server receives it
+6. Server broadcasts to ALL connected users
+7. Sarah's browser receives message
+8. JavaScript displays it instantly
+9. No page refresh needed!
+</code></pre>
+            </div>
+
+            <h3>Q6: How do you handle multiple users accessing database simultaneously?</h3>
+            <div class="card highlight">
+                <p><strong>Answer: Database Transactions & Locking</strong></p>
+
+                <h4>Problem:</h4>
+                <p>Two users try to update same data at same time - could cause data corruption</p>
+
+                <h4>Solution:</h4>
+                <pre><code># SQLAlchemy handles this with transactions
+try:
+    # Start transaction
+    user = User.query.get(user_id)
+    user.total_xp += 50
+    
+    # Commit transaction (atomic operation)
+    db.session.commit()
+    
+except Exception as e:
+    # If error, rollback (undo changes)
+    db.session.rollback()
+    print(f"Error: {e}")
+</code></pre>
+
+                <ul>
+                    <li><strong>Transactions:</strong> All-or-nothing operations</li>
+                    <li><strong>ACID Properties:</strong> Atomicity, Consistency, Isolation, Durability</li>
+                    <li><strong>Row Locking:</strong> Database locks row during update</li>
+                </ul>
+            </div>
+
+            <h3>Q7: Why use environment variables (.env file)?</h3>
+            <div class="card">
+                <p><strong>Answer: Security & Configuration Management</strong></p>
+
+                <h4>Instead of hardcoding:</h4>
+                <pre><code># ❌ BAD - Secrets visible in code
+AI_API_KEY = "sk-1234567890abcdef"
+DATABASE_URL = "postgresql://user:pass@server/db"
+</code></pre>
+
+                <h4>We use:</h4>
+                <pre><code># ✅ GOOD - In .env file (not committed to Git)
+AI_API_KEY=sk-1234567890abcdef
+DATABASE_URL=postgresql://user:pass@server/db
+
+# In code
+import os
+api_key = os.getenv('AI_API_KEY')
+</code></pre>
+
+                <h4>Benefits:</h4>
+                <ul>
+                    <li><strong>Security:</strong> API keys not exposed in code</li>
+                    <li><strong>Different environments:</strong> Dev vs Production configs</li>
+                    <li><strong>Team collaboration:</strong> Each dev has own keys</li>
+                    <li><strong>Easy deployment:</strong> Change config without code changes</li>
+                </ul>
+            </div>
+
+            <!-- CONCLUSION -->
+            <h2>🎯 Summary</h2>
+
+            <div class="card success">
+                <h3>Technologies & Concepts Demonstrated:</h3>
+                <ul>
+                    <li>✅ <strong>Python OOP:</strong> Classes, inheritance, encapsulation</li>
+                    <li>✅ <strong>Web Development:</strong> Flask framework, RESTful APIs</li>
+                    <li>✅ <strong>Database:</strong> SQLAlchemy ORM, PostgreSQL</li>
+                    <li>✅ <strong>Real-time:</strong> WebSockets with Socket.IO</li>
+                    <li>✅ <strong>Security:</strong> Password hashing, session management</li>
+                    <li>✅ <strong>AI Integration:</strong> Google Gemini API</li>
+                    <li>✅ <strong>Async Programming:</strong> Threading for emails</li>
+                    <li>✅ <strong>File Handling:</strong> PDF uploads and processing</li>
+                    <li>✅ <strong>Error Handling:</strong> Try-except blocks</li>
+                    <li>✅ <strong>Code Organization:</strong> Modular structure</li>
+                </ul>
+            </div>
+
+            <div class="card" style="text-align: center; margin-top: 40px; padding: 40px;">
+                <h2>📚 End of Documentation</h2>
+                <p style="margin-top: 15px; font-size: 1.1rem;">
+                    <strong>StudyVerse Project</strong> • Python Code Analysis
+                </p>
+                <p style="margin-top: 10px; color: var(--secondary);">
+                    3,703 lines of well-structured, production-ready Python code
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -11,6 +11,7 @@ WTForms==3.1.1
 # Real-time Communication
 Flask-SocketIO==5.5.1
 python-socketio>=5.12.0
+simple-websocket>=1.0.0
 
 # Database
 SQLAlchemy>=2.0.35

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyVerse HTML Templates - Complete Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 40px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin: 30px 0 15px 0;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 20px 0 10px 0;
+        }
+
+        .card {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            border-left-color: var(--warning);
+        }
+
+        .success {
+            background: #d1fae5;
+            border-left-color: var(--accent);
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            background: #282c34;
+            color: #61dafb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        ul,
+        ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 StudyVerse HTML Templates Documentation</h1>
+            <p>Complete Frontend Template Structure & Jinja2 Concepts</p>
+        </header>
+
+        <div class="content">
+            <h2>📂 Template Files Overview</h2>
+
+            <div class="card success">
+                <h3>20 HTML Template Files:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Purpose</th>
+                            <th>Key Features</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>layout.html</code></td>
+                            <td>Base template with sidebar & navbar</td>
+                            <td>Jinja2 blocks, navigation, user profile</td>
+                        </tr>
+                        <tr>
+                            <td><code>auth.html</code></td>
+                            <td>Login & Registration page</td>
+                            <td>Form validation, Google OAuth</td>
+                        </tr>
+                        <tr>
+                            <td><code>dashboard.html</code></td>
+                            <td>Main home page</td>
+                            <td>XP stats, quests, live activity globe</td>
+                        </tr>
+                        <tr>
+                            <td><code>todos.html</code></td>
+                            <td>Task management</td>
+                            <td>CRUD operations, categories, filters</td>
+                        </tr>
+                        <tr>
+                            <td><code>pomodoro.html</code></td>
+                            <td>Focus timer</td>
+                            <td>Timer controls, session tracking</td>
+                        </tr>
+                        <tr>
+                            <td><code>chat.html</code></td>
+                            <td>AI chatbot interface</td>
+                            <td>Markdown rendering, voice input</td>
+                        </tr>
+                        <tr>
+                            <td><code>group_chat.html</code></td>
+                            <td>Group messaging</td>
+                            <td>WebSocket, file uploads, whiteboard</td>
+                        </tr>
+                        <tr>
+                            <td><code>syllabus.html</code></td>
+                            <td>Syllabus management</td>
+                            <td>PDF upload, topic tracking</td>
+                        </tr>
+                        <tr>
+                            <td><code>progress.html</code></td>
+                            <td>Subject proficiency tracking</td>
+                            <td>Charts, progress bars</td>
+                        </tr>
+                        <tr>
+                            <td><code>friends.html</code></td>
+                            <td>Friend system</td>
+                            <td>Friend requests, search, profiles</td>
+                        </tr>
+                        <tr>
+                            <td><code>battle.html</code></td>
+                            <td>Coding battle arena</td>
+                            <td>Real-time code editor, matchmaking</td>
+                        </tr>
+                        <tr>
+                            <td><code>shop.html</code></td>
+                            <td>XP item store</td>
+                            <td>Power-ups, themes, purchases</td>
+                        </tr>
+                        <tr>
+                            <td><code>leaderboard.html</code></td>
+                            <td>XP rankings</td>
+                            <td>Top users, rank display</td>
+                        </tr>
+                        <tr>
+                            <td><code>profile.html</code></td>
+                            <td>User profile page</td>
+                            <td>Stats, badges, achievements</td>
+                        </tr>
+                        <tr>
+                            <td><code>settings.html</code></td>
+                            <td>User settings</td>
+                            <td>Profile edit, preferences</td>
+                        </tr>
+                        <tr>
+                            <td><code>flashcards.html</code></td>
+                            <td>Flashcard study</td>
+                            <td>Flip animation, deck management</td>
+                        </tr>
+                        <tr>
+                            <td><code>quiz.html</code></td>
+                            <td>Quiz taking interface</td>
+                            <td>Questions, scoring, results</td>
+                        </tr>
+                        <tr>
+                            <td><code>calendar.html</code></td>
+                            <td>Study schedule calendar</td>
+                            <td>Event management, reminders</td>
+                        </tr>
+                        <tr>
+                            <td><code>email/welcome.html</code></td>
+                            <td>Welcome email template</td>
+                            <td>Styled email, call-to-action</td>
+                        </tr>
+                        <tr>
+                            <td><code>base.html</code></td>
+                            <td>Minimal base template</td>
+                            <td>Basic HTML structure</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>🎓 HTML & Jinja2 Concepts</h2>
+
+            <h3>1. Template Inheritance</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Templates can extend other templates to avoid code duplication</p>
+
+                <h4>Base Template (layout.html):</h4>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;{% block title %}StudyVerse{% endblock %}&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;aside class="sidebar"&gt;
+        &lt;!-- Navigation menu --&gt;
+    &lt;/aside&gt;
+    
+    &lt;main&gt;
+        {% block content %}
+        &lt;!-- Child template content goes here --&gt;
+        {% endblock %}
+    &lt;/main&gt;
+    
+    {% block scripts %}
+    &lt;!-- Child template scripts go here --&gt;
+    {% endblock %}
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+                <h4>Child Template (dashboard.html):</h4>
+                <pre><code>{% extends "layout.html" %}
+
+{% block title %}Dashboard - StudyVerse{% endblock %}
+
+{% block content %}
+    &lt;h1&gt;Welcome to Dashboard&lt;/h1&gt;
+    &lt;p&gt;Your XP: {{ current_user.total_xp }}&lt;/p&gt;
+{% endblock %}
+
+{% block scripts %}
+    &lt;script src="dashboard.js"&gt;&lt;/script&gt;
+{% endblock %}
+</code></pre>
+
+                <p><strong>Result:</strong> Child template inherits entire structure from parent!</p>
+            </div>
+
+            <h3>2. Jinja2 Variables</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Display dynamic data from Python backend</p>
+
+                <pre><code>&lt;!-- Simple variable --&gt;
+&lt;h1&gt;Welcome, {{ current_user.first_name }}&lt;/h1&gt;
+
+&lt;!-- Object properties --&gt;
+&lt;p&gt;Email: {{ current_user.email }}&lt;/p&gt;
+&lt;p&gt;Level: {{ current_user.level }}&lt;/p&gt;
+&lt;p&gt;XP: {{ current_user.total_xp }}&lt;/p&gt;
+
+&lt;!-- With default value --&gt;
+&lt;p&gt;Name: {{ current_user.first_name or 'Guest' }}&lt;/p&gt;
+
+&lt;!-- Dictionary access --&gt;
+&lt;p&gt;Setting: {{ settings['theme'] }}&lt;/p&gt;
+
+&lt;!-- List access --&gt;
+&lt;p&gt;First todo: {{ todos[0].title }}&lt;/p&gt;
+
+&lt;!-- Function calls --&gt;
+&lt;img src="{{ url_for('static', filename='logo.png') }}"&gt;
+</code></pre>
+            </div>
+
+            <h3>3. Control Structures (If-Else)</h3>
+            <div class="card">
+                <pre><code>&lt;!-- Simple if --&gt;
+{% if current_user.is_authenticated %}
+    &lt;p&gt;You are logged in!&lt;/p&gt;
+{% endif %}
+
+&lt;!-- If-else --&gt;
+{% if current_user.total_xp &gt; 1000 %}
+    &lt;span class="badge gold"&gt;Gold Rank&lt;/span&gt;
+{% else %}
+    &lt;span class="badge bronze"&gt;Bronze Rank&lt;/span&gt;
+{% endif %}
+
+&lt;!-- If-elif-else --&gt;
+{% if user.level &gt;= 50 %}
+    &lt;span&gt;🏆 Master&lt;/span&gt;
+{% elif user.level &gt;= 20 %}
+    &lt;span&gt;💎 Expert&lt;/span&gt;
+{% elif user.level &gt;= 10 %}
+    &lt;span&gt;⭐ Advanced&lt;/span&gt;
+{% else %}
+    &lt;span&gt;📚 Beginner&lt;/span&gt;
+{% endif %}
+
+&lt;!-- Multiple conditions --&gt;
+{% if current_user.is_authenticated and current_user.is_admin %}
+    &lt;button&gt;Admin Panel&lt;/button&gt;
+{% endif %}
+</code></pre>
+            </div>
+
+            <h3>4. Loops (For)</h3>
+            <div class="card">
+                <pre><code>&lt;!-- Loop through list --&gt;
+{% for todo in todos %}
+    &lt;div class="todo-item"&gt;
+        &lt;h3&gt;{{ todo.title }}&lt;/h3&gt;
+        &lt;p&gt;Category: {{ todo.category }}&lt;/p&gt;
+        &lt;p&gt;Status: {{ 'Done' if todo.completed else 'Pending' }}&lt;/p&gt;
+    &lt;/div&gt;
+{% endfor %}
+
+&lt;!-- Empty list handling --&gt;
+{% for message in messages %}
+    &lt;div class="message"&gt;{{ message.content }}&lt;/div&gt;
+{% else %}
+    &lt;p&gt;No messages yet.&lt;/p&gt;
+{% endfor %}
+
+&lt;!-- Loop with counter --&gt;
+{% for user in top_users %}
+    &lt;div class="rank-{{ loop.index }}"&gt;
+        &lt;span&gt;#{{ loop.index }}&lt;/span&gt;
+        &lt;span&gt;{{ user.name }}&lt;/span&gt;
+        &lt;span&gt;{{ user.total_xp }} XP&lt;/span&gt;
+    &lt;/div&gt;
+{% endfor %}
+
+&lt;!-- Loop variables --&gt;
+{% for item in items %}
+    First: {{ loop.first }}
+    Last: {{ loop.last }}
+    Index: {{ loop.index }}  &lt;!-- 1-based --&gt;
+    Index0: {{ loop.index0 }} &lt;!-- 0-based --&gt;
+    Length: {{ loop.length }}
+{% endfor %}
+</code></pre>
+            </div>
+
+            <h3>5. Filters</h3>
+            <div class="card">
+                <p><strong>Concept:</strong> Transform variables using pipe operator</p>
+
+                <pre><code>&lt;!-- String filters --&gt;
+&lt;p&gt;{{ username|upper }}&lt;/p&gt;           &lt;!-- JOHN DOE --&gt;
+&lt;p&gt;{{ username|lower }}&lt;/p&gt;           &lt;!-- john doe --&gt;
+&lt;p&gt;{{ username|title }}&lt;/p&gt;           &lt;!-- John Doe --&gt;
+&lt;p&gt;{{ text|truncate(50) }}&lt;/p&gt;        &lt;!-- First 50 chars --&gt;
+
+&lt;!-- Number filters --&gt;
+&lt;p&gt;{{ price|round(2) }}&lt;/p&gt;           &lt;!-- 19.99 --&gt;
+&lt;p&gt;{{ count|abs }}&lt;/p&gt;                &lt;!-- Absolute value --&gt;
+
+&lt;!-- List filters --&gt;
+&lt;p&gt;{{ users|length }}&lt;/p&gt;             &lt;!-- Count items --&gt;
+&lt;p&gt;{{ names|join(', ') }}&lt;/p&gt;        &lt;!-- Join with comma --&gt;
+&lt;p&gt;{{ numbers|sum }}&lt;/p&gt;              &lt;!-- Sum all numbers --&gt;
+&lt;p&gt;{{ items|first }}&lt;/p&gt;              &lt;!-- First item --&gt;
+&lt;p&gt;{{ items|last }}&lt;/p&gt;               &lt;!-- Last item --&gt;
+
+&lt;!-- Date filters --&gt;
+&lt;p&gt;{{ date|date('Y-m-d') }}&lt;/p&gt;       &lt;!-- 2024-01-23 --&gt;
+
+&lt;!-- Custom filter (from our app) --&gt;
+&lt;p&gt;{{ message.created_at|ist_time }}&lt;/p&gt;
+</code></pre>
+            </div>
+
+            <h3>6. URL Generation</h3>
+            <div class="card">
+                <pre><code>&lt;!-- Static files --&gt;
+&lt;link rel="stylesheet" 
+      href="{{ url_for('static', filename='css/style.css') }}"&gt;
+      
+&lt;script src="{{ url_for('static', filename='js/main.js') }}"&gt;
+&lt;/script&gt;
+
+&lt;img src="{{ url_for('static', filename='img/logo.png') }}"&gt;
+
+&lt;!-- Routes --&gt;
+&lt;a href="{{ url_for('dashboard') }}"&gt;Dashboard&lt;/a&gt;
+&lt;a href="{{ url_for('todos_page') }}"&gt;Tasks&lt;/a&gt;
+
+&lt;!-- Routes with parameters --&gt;
+&lt;a href="{{ url_for('profile', user_id=user.id) }}"&gt;
+    View Profile
+&lt;/a&gt;
+
+&lt;form action="{{ url_for('create_todo') }}" method="POST"&gt;
+    &lt;!-- Form fields --&gt;
+&lt;/form&gt;
+</code></pre>
+            </div>
+
+            <h2>📄 Key Template Breakdowns</h2>
+
+            <h3>layout.html - Base Template</h3>
+            <div class="card success">
+                <h4>Structure:</h4>
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;{% block title %}StudyVerse{% endblock %}&lt;/title&gt;
+    &lt;!-- CSS files --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Mobile Header --&gt;
+    &lt;div class="mobile-header"&gt;
+        &lt;button id="sidebar-toggle"&gt;Menu&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Sidebar Navigation --&gt;
+    &lt;aside class="sidebar"&gt;
+        &lt;div class="logo"&gt;StudyVerse&lt;/div&gt;
+        
+        &lt;nav&gt;
+            {% if current_user.is_authenticated %}
+                &lt;a href="{{ url_for('dashboard') }}"&gt;Dashboard&lt;/a&gt;
+                &lt;a href="{{ url_for('pomodoro') }}"&gt;Focus Mode&lt;/a&gt;
+                &lt;a href="{{ url_for('todos_page') }}"&gt;Tasks&lt;/a&gt;
+                &lt;a href="{{ url_for('chat') }}"&gt;AI Coach&lt;/a&gt;
+            {% endif %}
+        &lt;/nav&gt;
+        
+        &lt;!-- User Profile Section --&gt;
+        {% if current_user.is_authenticated %}
+            &lt;div class="user-profile"&gt;
+                &lt;img src="{{ current_user.get_avatar() }}"&gt;
+                &lt;p&gt;{{ current_user.first_name }}&lt;/p&gt;
+                &lt;p&gt;Level {{ current_user.level }}&lt;/p&gt;
+                
+                &lt;!-- XP Progress Bar --&gt;
+                &lt;div class="xp-bar"&gt;
+                    &lt;div style="width: {{ level_progress }}%"&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        {% endif %}
+    &lt;/aside&gt;
+    
+    &lt;!-- Main Content Area --&gt;
+    &lt;main class="main-content"&gt;
+        &lt;!-- Flash Messages --&gt;
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    &lt;div class="alert alert-{{ category }}"&gt;
+                        {{ message }}
+                    &lt;/div&gt;
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        &lt;!-- Child template content --&gt;
+        {% block content %}{% endblock %}
+    &lt;/main&gt;
+    
+    &lt;!-- Scripts --&gt;
+    &lt;script src="{{ url_for('static', filename='js/main.js') }}"&gt;
+    &lt;/script&gt;
+    {% block scripts %}{% endblock %}
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+                <h4>Key Features:</h4>
+                <ul>
+                    <li>✅ Responsive sidebar (mobile-friendly)</li>
+                    <li>✅ User authentication check</li>
+                    <li>✅ Flash message system</li>
+                    <li>✅ XP progress bar</li>
+                    <li>✅ Block inheritance</li>
+                </ul>
+            </div>
+
+            <h3>dashboard.html - Home Page</h3>
+            <div class="card">
+                <h4>Structure:</h4>
+                <pre><code>{% extends "layout.html" %}
+
+{% block content %}
+&lt;div class="page-header"&gt;
+    &lt;h1&gt;Ultimate Student Planner&lt;/h1&gt;
+    &lt;p&gt;Welcome back, {{ current_user.first_name or 'Student' }}&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- Three Column Layout --&gt;
+&lt;div class="layout-home"&gt;
+    
+    &lt;!-- Left Column --&gt;
+    &lt;div&gt;
+        &lt;!-- Daily Quests --&gt;
+        &lt;div class="card"&gt;
+            &lt;h3&gt;Daily Quests&lt;/h3&gt;
+            {% if quests %}
+                {% for quest in quests %}
+                    &lt;div class="quest-item"&gt;
+                        &lt;i class="fa {{ quest.icon }}"&gt;&lt;/i&gt;
+                        &lt;span&gt;{{ quest.description }}&lt;/span&gt;
+                        &lt;span&gt;+{{ quest.xp_reward }} XP&lt;/span&gt;
+                        
+                        &lt;!-- Progress bar --&gt;
+                        &lt;div class="progress-bar"&gt;
+                            &lt;div style="width: {{ 
+                                (quest.progress / quest.target * 100)|int 
+                            }}%"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                {% endfor %}
+            {% else %}
+                &lt;p&gt;All quests completed!&lt;/p&gt;
+            {% endif %}
+        &lt;/div&gt;
+        
+        &lt;!-- Live Activity Globe --&gt;
+        &lt;div id="activity-globe"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Middle Column --&gt;
+    &lt;div&gt;
+        &lt;!-- Current Streak --&gt;
+        &lt;div class="streak-widget"&gt;
+            &lt;i class="fa fa-fire"&gt;&lt;/i&gt;
+            &lt;span&gt;{{ current_user.current_streak }} Days&lt;/span&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- Stats Grid --&gt;
+        &lt;div class="stats-grid"&gt;
+            &lt;div class="stat-card"&gt;
+                &lt;h4&gt;Total XP&lt;/h4&gt;
+                &lt;p&gt;{{ current_user.total_xp }}&lt;/p&gt;
+            &lt;/div&gt;
+            
+            &lt;div class="stat-card"&gt;
+                &lt;h4&gt;Study Hours&lt;/h4&gt;
+                &lt;p&gt;{{ weekly_hours }}h&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Right Column --&gt;
+    &lt;div&gt;
+        &lt;!-- Recent Tasks --&gt;
+        &lt;div class="weekly-todo"&gt;
+            &lt;h3&gt;Recent Tasks&lt;/h3&gt;
+            {% for todo in recent_todos[:5] %}
+                &lt;form action="{{ url_for('todos_toggle', 
+                                        todo_id=todo.id) }}" 
+                      method="POST"&gt;
+                    &lt;div class="todo-item"&gt;
+                        &lt;input type="checkbox" 
+                               {{ 'checked' if todo.completed }}&gt;
+                        &lt;span&gt;{{ todo.title }}&lt;/span&gt;
+                    &lt;/div&gt;
+                &lt;/form&gt;
+            {% endfor %}
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}
+
+{% block scripts %}
+&lt;script src="//unpkg.com/globe.gl"&gt;&lt;/script&gt;
+&lt;script&gt;
+    // Initialize 3D globe
+    const Globe = window.Globe()('#activity-globe');
+&lt;/script&gt;
+{% endblock %}
+</code></pre>
+            </div>
+
+            <h3>group_chat.html - Real-Time Messaging</h3>
+            <div class="card">
+                <h4>Structure:</h4>
+                <pre><code>{% extends "layout.html" %}
+
+{% block content %}
+&lt;div class="chat-container"&gt;
+    &lt;!-- Chat Header --&gt;
+    &lt;div class="chat-header"&gt;
+        &lt;h2&gt;{{ group.name }}&lt;/h2&gt;
+        &lt;span&gt;{{ online_count }} members online&lt;/span&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Messages Area --&gt;
+    &lt;div id="groupMessagesContainer"&gt;
+        {% for message in messages %}
+            &lt;div class="message {{ 
+                'own-message' if message.user_id == current_user.id 
+            }}"&gt;
+                &lt;div class="message-avatar"&gt;
+                    &lt;img src="{{ message.user.get_avatar() }}"&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="message-content"&gt;
+                    &lt;div class="message-header"&gt;
+                        &lt;strong&gt;
+                            {{ message.user.first_name }}
+                        &lt;/strong&gt;
+                        &lt;span class="timestamp"&gt;
+                            {{ message.created_at|ist_time }}
+                        &lt;/span&gt;
+                    &lt;/div&gt;
+                    
+                    &lt;div class="message-text"&gt;
+                        {{ message.content }}
+                    &lt;/div&gt;
+                    
+                    {% if message.file_path %}
+                        &lt;a href="{{ message.file_path }}" download&gt;
+                            📎 {{ message.file_path.split('/')[-1] }}
+                        &lt;/a&gt;
+                    {% endif %}
+                &lt;/div&gt;
+            &lt;/div&gt;
+        {% endfor %}
+    &lt;/div&gt;
+    
+    &lt;!-- Input Area --&gt;
+    &lt;form id="groupChatForm"&gt;
+        &lt;input type="text" 
+               id="groupChatInput" 
+               placeholder="Type a message..."&gt;
+        
+        &lt;button type="button" id="fileUploadBtn"&gt;
+            &lt;i class="fa fa-paperclip"&gt;&lt;/i&gt;
+        &lt;/button&gt;
+        
+        &lt;button type="submit"&gt;
+            &lt;i class="fa fa-paper-plane"&gt;&lt;/i&gt;
+        &lt;/button&gt;
+    &lt;/form&gt;
+    
+    &lt;!-- Whiteboard Toggle --&gt;
+    &lt;button id="toggleWhiteboard"&gt;
+        &lt;i class="fa fa-paintbrush"&gt;&lt;/i&gt; Whiteboard
+    &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Whiteboard Canvas (Hidden) --&gt;
+&lt;div id="whiteboardContainer" style="display: none;"&gt;
+    &lt;canvas id="whiteboard"&gt;&lt;/canvas&gt;
+    &lt;div class="whiteboard-tools"&gt;
+        &lt;input type="color" id="wb-color"&gt;
+        &lt;button id="wb-clear"&gt;Clear&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}
+
+{% block scripts %}
+&lt;script src="https://cdn.socket.io/4.0.0/socket.io.min.js"&gt;
+&lt;/script&gt;
+&lt;script&gt;
+    // Pass data from Python to JavaScript
+    const GROUP_ID = "{{ group.id }}";
+    const CURRENT_USER_ID = {{ current_user.id }};
+    const CURRENT_USER_NAME = "{{ current_user.first_name }}";
+&lt;/script&gt;
+&lt;script src="{{ url_for('static', filename='js/group_chat.js') }}"&gt;
+&lt;/script&gt;
+&lt;script src="{{ url_for('static', filename='js/whiteboard.js') }}"&gt;
+&lt;/script&gt;
+{% endblock %}
+</code></pre>
+
+                <h4>Key Concepts:</h4>
+                <ul>
+                    <li>Passing Python data to JavaScript</li>
+                    <li>Conditional CSS classes</li>
+                    <li>File upload handling</li>
+                    <li>Socket.IO integration</li>
+                </ul>
+            </div>
+
+            <h2>❓ Faculty Questions & Answers</h2>
+
+            <h3>Q1: What is Jinja2 and why use it?</h3>
+            <div class="card highlight">
+                <p><strong>Answer:</strong></p>
+                <p>Jinja2 is a modern templating engine for Python that allows us to generate dynamic HTML.</p>
+
+                <h4>Without Jinja2 (Static HTML):</h4>
+                <pre><code>&lt;h1&gt;Welcome, Guest&lt;/h1&gt;
+&lt;p&gt;You have 0 XP&lt;/p&gt;
+</code></pre>
+
+                <h4>With Jinja2 (Dynamic):</h4>
+                <pre><code>&lt;h1&gt;Welcome, {{ current_user.first_name }}&lt;/h1&gt;
+&lt;p&gt;You have {{ current_user.total_xp }} XP&lt;/p&gt;
+</code></pre>
+
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li>✅ Dynamic content from database</li>
+                    <li>✅ Reusable templates (DRY principle)</li>
+                    <li>✅ Logic in templates (if/for)</li>
+                    <li>✅ Template inheritance</li>
+                </ul>
+            </div>
+
+            <h3>Q2: How does template inheritance work?</h3>
+            <div class="card">
+                <p><strong>Answer: Parent-Child Relationship</strong></p>
+
+                <ol>
+                    <li><strong>layout.html</strong> defines structure with <code>{% block %}</code></li>
+                    <li><strong>dashboard.html</strong> extends layout with <code>{% extends %}</code></li>
+                    <li>Child fills in parent's blocks</li>
+                    <li>Result: Complete page with inherited structure</li>
+                </ol>
+
+                <p><strong>Benefits:</strong></p>
+                <ul>
+                    <li>Don't repeat sidebar/navbar on every page</li>
+                    <li>Change layout once, updates all pages</li>
+                    <li>Consistent design across application</li>
+                </ul>
+            </div>
+
+            <h3>Q3: What are flash messages?</h3>
+            <div class="card success">
+                <p><strong>Answer: One-time notifications to users</strong></p>
+
+                <h4>In Python (app.py):</h4>
+                <pre><code>from flask import flash
+
+@app.route('/login', methods=['POST'])
+def login():
+    if password_correct:
+        flash('Login successful!', 'success')
+    else:
+        flash('Invalid password', 'danger')
+</code></pre>
+
+                <h4>In Template:</h4>
+                <pre><code>{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            &lt;div class="alert alert-{{ category }}"&gt;
+                {{ message }}
+            &lt;/div&gt;
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+</code></pre>
+
+                <p>Flash messages appear once, then disappear on next request!</p>
+            </div>
+
+            <h3>Q4: How do forms work with Flask?</h3>
+            <div class="card">
+                <h4>HTML Form:</h4>
+                <pre><code>&lt;form action="{{ url_for('create_todo') }}" method="POST"&gt;
+    &lt;input type="text" name="title" required&gt;
+    &lt;select name="category"&gt;
+        &lt;option value="study"&gt;Study&lt;/option&gt;
+        &lt;option value="work"&gt;Work&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;button type="submit"&gt;Create Task&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+
+                <h4>Python Handler:</h4>
+                <pre><code>@app.route('/todos/create', methods=['POST'])
+def create_todo():
+    title = request.form.get('title')
+    category = request.form.get('category')
+    
+    new_todo = Todo(title=title, category=category)
+    db.session.add(new_todo)
+    db.session.commit()
+    
+    flash('Task created!', 'success')
+    return redirect(url_for('todos_page'))
+</code></pre>
+
+                <p><strong>Flow:</strong> User fills form → Submit → Python receives data → Save to DB → Redirect</p>
+            </div>
+
+            <h3>Q5: What is CSRF protection?</h3>
+            <div class="card highlight">
+                <p><strong>Answer: Cross-Site Request Forgery Protection</strong></p>
+
+                <p><strong>Problem:</strong> Malicious websites could submit forms on your behalf!</p>
+
+                <p><strong>Solution: CSRF Token</strong></p>
+                <pre><code>&lt;form method="POST"&gt;
+    &lt;!-- Hidden token field --&gt;
+    &lt;input type="hidden" 
+           name="csrf_token" 
+           value="{{ csrf_token() }}"&gt;
+    
+    &lt;input type="text" name="username"&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+
+                <p>Flask verifies token before processing form - prevents unauthorized requests!</p>
+            </div>
+
+            <h2>🎯 Summary</h2>
+
+            <div class="card success">
+                <h3>HTML & Jinja2 Concepts Covered:</h3>
+                <ul>
+                    <li>✅ Template inheritance (extends, blocks)</li>
+                    <li>✅ Variables and expressions ({{ }})</li>
+                    <li>✅ Control structures (if, for, while)</li>
+                    <li>✅ Filters (upper, lower, date, custom)</li>
+                    <li>✅ URL generation (url_for)</li>
+                    <li>✅ Flash messages</li>
+                    <li>✅ Form handling</li>
+                    <li>✅ CSRF protection</li>
+                    <li>✅ Static file linking</li>
+                    <li>✅ API integration</li>
+                </ul>
+            </div>
+
+            <div class="card" style="text-align: center; margin-top: 40px; padding: 40px;">
+                <h2>📄 End of Documentation</h2>
+                <p style="margin-top: 15px; font-size: 1.1rem;">
+                    <strong>StudyVerse Project</strong> • HTML Templates Analysis
+                </p>
+                <p style="margin-top: 10px; color: var(--secondary);">
+                    20 template files with Jinja2 templating engine
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
