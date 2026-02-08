@@ -471,7 +471,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.min.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
 
 <!-- Server data for JavaScript -->
@@ -481,142 +481,192 @@
 </div>
 
 <script>
-    // Read server data from data attributes (no Jinja in JS = no editor errors)
-    const orderData = document.getElementById('order-data').dataset;
-    const orderId = parseInt(orderData.orderId);
-    const currentUserId = parseInt(orderData.currentUserId);
-    const partnerId = parseInt(orderData.partnerId);
-    const orderStatus = orderData.orderStatus;
-
-    // Simple socket connection
-    const socket = io();
-
-    socket.on('connect', function () {
-        console.log('Socket connected');
-        socket.emit('join', { order_id: orderId });
-        socket.emit('check_users_status', { user_ids: [partnerId] });
-    });
-
-    socket.on('disconnect', function () {
-        console.log('Socket disconnected');
-        const ind = document.getElementById('partner-status-indicator');
-        if (ind) {
-            ind.className = 'text-warning fw-bold';
-            ind.innerHTML = '⚠ Reconnecting...';
-        }
-    });
-
-    socket.on('users_status_response', (data) => {
-        updatePartnerStatus(data[partnerId]);
-    });
-
-    socket.on('user_status', (data) => {
-        if (parseInt(data.user_id) === parseInt(partnerId)) {
-            updatePartnerStatus(data.status);
-        }
-    });
-
-    function updatePartnerStatus(status) {
-        const ind = document.getElementById('partner-status-indicator');
-        const txt = document.getElementById('partner-status-text');
-        if (!ind) return;
-        if (status === 'online') {
-            ind.className = 'text-success fw-bold transition-all';
-            ind.innerHTML = '● Online';
-            if (txt) txt.innerHTML = 'and ready to chat';
-        } else {
-            ind.className = 'text-muted transition-all';
-            ind.innerHTML = '● Offline';
-            if (txt) txt.innerHTML = 'currently away';
-        }
-    }
-
-    socket.on('new_message', function (data) {
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- 1. CONFIGURATION & SETUP ---
+        const orderData = document.getElementById('order-data').dataset;
+        const orderId = parseInt(orderData.orderId);
+        const currentUserId = parseInt(orderData.currentUserId);
+        const partnerId = parseInt(orderData.partnerId);
+        const orderStatus = orderData.orderStatus;
+        
         const chatContainer = document.getElementById('chat-messages');
-        const isOwnMessage = data.sender_id === currentUserId;
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `d-flex mb-4 ${isOwnMessage ? 'justify-content-end' : 'justify-content-start'}`;
+        const msgInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const statusInd = document.getElementById('partner-status-indicator');
+        const statusTxt = document.getElementById('partner-status-text');
 
-        let html = '';
-        if (!isOwnMessage) {
-            html += `<div class="rounded-circle me-2 align-self-end bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center border border-white shadow-sm" style="width: 32px; height: 32px; margin-bottom: 20px;"><i class="bi bi-person-fill small text-secondary"></i></div>`;
+        // Scroll to bottom on load
+        if(chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
+        // Use a single, persistent connection with auto-reconnect
+        const socket = io({
+            transports: ['websocket'], // Force WebSocket for speed (no polling fallback)
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: Infinity
+        });
+
+        // Connection Events
+        socket.on('connect', () => {
+            console.log('⚡ Chat Connected');
+            // Join the specific room for this order
+            socket.emit('join', { order_id: orderId });
+            // Immediately check partner status
+            socket.emit('check_users_status', { user_ids: [partnerId] });
+            
+            // UI Feedback
+            if(statusInd) {
+                statusInd.className = 'text-secondary';
+                statusInd.innerHTML = '● Connecting...';
+            }
+        });
+
+        socket.on('disconnect', () => {
+            console.log('🔌 Chat Disconnected - Reconnecting...');
+            if(statusInd) {
+                statusInd.className = 'text-warning';
+                statusInd.innerHTML = '⚠ Reconnecting...';
+            }
+        });
+
+        // --- 3. REAL-TIME STATUS UPDATES ---
+        socket.on('users_status_response', (data) => {
+            updateStatusUI(data[partnerId]);
+        });
+
+        socket.on('user_status', (data) => {
+            if (parseInt(data.user_id) === partnerId) {
+                updateStatusUI(data.status);
+            }
+        });
+
+        function updateStatusUI(status) {
+            if (!statusInd) return;
+            
+            if (status === 'online') {
+                statusInd.className = 'text-success fw-bold fade-in';
+                statusInd.innerHTML = '● Online';
+                if(statusTxt) statusTxt.textContent = 'Active now';
+            } else {
+                statusInd.className = 'text-muted fade-in';
+                statusInd.innerHTML = '● Offline';
+                if(statusTxt) statusTxt.textContent = 'Last seen recently';
+            }
         }
 
-        html += `
-            <div class="d-flex flex-column ${isOwnMessage ? 'align-items-end' : 'align-items-start'}" style="max-width: 75%;">
-                <div class="chat-bubble ${isOwnMessage ? 'me' : 'them'}">
-                    ${data.content}
+        // --- 4. MESSAGING LOGIC (Instant UI Update) ---
+        socket.on('new_message', (data) => {
+            appendMessage(data);
+        });
+
+        function appendMessage(data) {
+            if (!chatContainer) return;
+
+            const isMe = parseInt(data.sender_id) === currentUserId;
+            
+            // Create Message Element
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `d-flex mb-3 fade-in-up ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
+            
+            // Avatar for other person
+            let avatarHtml = '';
+            if (!isMe) {
+                // We use a generic placeholder or try to get it from DOM if possible, 
+                // but keeping it simple and fast is key.
+                avatarHtml = `
+                <div class="rounded-circle me-2 align-self-end shadow-sm border border-white d-flex align-items-center justify-content-center bg-light text-secondary" 
+                     style="width: 32px; height: 32px; margin-bottom: 2rem; font-size: 12px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>`;
+            }
+
+            msgDiv.innerHTML = `
+                ${avatarHtml}
+                <div class="d-flex flex-column ${isMe ? 'align-items-end' : 'align-items-start'}" style="max-width: 75%;">
+                    <div class="chat-bubble ${isMe ? 'me' : 'them'} shadow-sm">
+                        ${data.content}
+                    </div>
+                    <span class="chat-meta mt-1 ms-1 me-1">${data.time_display || 'Just now'}</span>
                 </div>
-                <span class="chat-meta">${data.time_display || 'Just now'}</span>
-            </div>
-        `;
+            `;
 
-        msgDiv.innerHTML = html;
-        chatContainer.appendChild(msgDiv);
+            chatContainer.appendChild(msgDiv);
+            
+            // Smooth Scroll to bottom
+            requestAnimationFrame(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+        }
 
-        setTimeout(() => {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 50);
-    });
+        function sendMessage() {
+            if (!msgInput || !msgInput.value.trim()) return;
+            if (orderStatus === 'pending') {
+                alert("Order must be accepted before chatting.");
+                return;
+            }
 
-    function sendMessage() {
-        const input = document.getElementById('message-input');
-        if (!input.value.trim() || orderStatus === 'pending') return;
-        socket.emit('send_message', { order_id: orderId, content: input.value.trim() });
-        input.value = '';
-    }
+            const content = msgInput.value.trim();
+            const tempId = Date.now(); // Temporary ID for optimistic UI
 
-    document.getElementById('send-btn')?.addEventListener('click', sendMessage);
-    document.getElementById('message-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+            // 1. Optimistic UI Update (Show message IMMEDIATELY)
+            // This makes it feel like "Real WhatsApp" speed
+            appendMessage({
+                sender_id: currentUserId,
+                content: content,
+                time_display: 'Sending...'
+            });
 
-    // Only disconnect on actual page leave (not tab switch)
-    window.addEventListener('beforeunload', function () {
-        socket.disconnect();
-    });
+            // 2. Clear Input
+            msgInput.value = '';
+            msgInput.focus();
 
-    // Calendar Logic
-    document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('bookingCalendar');
-        var calendarModal = document.getElementById('calendarModal');
-        var confirmModal = new bootstrap.Modal(document.getElementById('confirmBookingModal'));
-        var calendar = null;
+            // 3. Send to Server
+            socket.emit('send_message', { 
+                order_id: orderId, 
+                content: content,
+                temp_id: tempId 
+            });
+        }
 
-        if (calendarModal) {
-            calendarModal.addEventListener('shown.bs.modal', function () {
+        // Event Listeners
+        if(sendBtn) sendBtn.addEventListener('click', sendMessage);
+        
+        if(msgInput) {
+            msgInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        }
+        
+        
+        // --- 5. CALENDAR LOGIC (Only if needed) ---
+        const calendarEl = document.getElementById('bookingCalendar');
+        if (calendarEl) {
+            const calendarModal = document.getElementById('calendarModal');
+            let calendar = null;
+
+            calendarModal.addEventListener('shown.bs.modal', function() {
                 if (calendar) { calendar.render(); return; }
+                
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek',
-                    timeZone: 'local',
-                    allDaySlot: false,
-                    validRange: {
-                        start: new Date().toISOString().split('T')[0] // Start from today
-                    },
+                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+                    height: 'auto',
                     slotMinTime: '08:00:00',
                     slotMaxTime: '22:00:00',
-                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
-                    events: '/availability/provider/' + orderData.providerId + '/slots',
-                    eventClick: function (info) {
-                        const slot = info.event;
-                        if (slot.extendedProps.booked) return;
-
-                        document.getElementById('selectedSlotId').value = slot.id;
-                        const start = slot.start.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                        const end = slot.end.toLocaleString([], { hour: '2-digit', minute: '2-digit' });
-                        document.getElementById('selectedTimeDisplay').textContent = `${start} - ${end}`;
+                    allDaySlot: false,
+                    events: `/availability/provider/${parseInt(orderData.providerId)}/slots`,
+                    eventClick: function(info) {
+                        const slotID = info.event.id;
+                        document.getElementById('selectedSlotId').value = slotID;
+                        
+                        // Show Confirmation Modal
+                        const start = info.event.start.toLocaleString([], {weekday: 'short', hour:'2-digit', minute:'2-digit'});
+                        document.getElementById('selectedTimeDisplay').textContent = start;
+                        
                         bootstrap.Modal.getInstance(calendarModal).hide();
-                        confirmModal.show();
-                    },
-                    eventDidMount: function (info) {
-                        if (info.event.extendedProps.booked) {
-                            // Style for booked slots
-                            info.el.style.opacity = '0.7';
-                            info.el.style.cursor = 'not-allowed';
-                        } else {
-                            // Style for available slots
-                            info.el.style.backgroundColor = '#10b981';
-                            info.el.style.borderColor = '#10b981';
-                            info.el.style.cursor = 'pointer';
-                        }
+                        new bootstrap.Modal(document.getElementById('confirmBookingModal')).show();
                     }
                 });
                 calendar.render();
