@@ -324,7 +324,7 @@ class Service(db.Model):
     
     # Relationships
     # One service can have many reviews
-    reviews = db.relationship('Review', backref='service', lazy='dynamic',
+    reviews = db.relationship('Review', backref='service', lazy='select',
                              cascade='all, delete-orphan')
     
     # One service can have many orders
@@ -346,7 +346,7 @@ class Service(db.Model):
         Returns:
             float: Average rating (0.0 to 5.0)
         """
-        reviews = self.reviews.all()
+        reviews = self.reviews
         if not reviews:
             return 0.0
         
@@ -360,7 +360,7 @@ class Service(db.Model):
         Returns:
             int: Review count
         """
-        return self.reviews.count()
+        return len(self.reviews)
     
     def get_tags_list(self):
         """
