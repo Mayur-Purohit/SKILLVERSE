@@ -1,8 +1,8 @@
-from gevent import monkey
-monkey.patch_all()
+import eventlet
+eventlet.monkey_patch()
 
 try:
-    from psycogreen.gevent import patch_psycopg
+    from psycogreen.eventlet import patch_psycopg
     patch_psycopg()
 except ImportError:
     pass

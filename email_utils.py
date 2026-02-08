@@ -53,8 +53,8 @@ def send_email(subject, recipient, template, **kwargs):
         msg.html = render_template(f'emails/{template}.html', **kwargs)
         
         # Send asynchronously to avoid blocking
-        from gevent import spawn
-        spawn(send_async_email, app, msg)
+        import eventlet
+        eventlet.spawn(send_async_email, app, msg)
         
         return True
     except Exception as e:
