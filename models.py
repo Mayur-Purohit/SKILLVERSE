@@ -303,9 +303,6 @@ class Service(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False, index=True)
     
-    # Relationships
-    favorited_by = db.relationship('Favorite', backref='service', lazy='dynamic', cascade='all, delete-orphan')
-    
     # Media
     image_url = db.Column(db.String(255), default='default-service.jpg')
     
