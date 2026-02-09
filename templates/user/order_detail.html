@@ -512,7 +512,8 @@
 
         // Connection Events
         socket.on('connect', () => {
-            console.log('⚡ Chat Connected');
+            console.log('⚡ Chat Connected, Socket ID:', socket.id);
+            console.log('📡 Joining room for order:', orderId);
             // Join the specific room for this order
             socket.emit('join', { order_id: orderId });
             // Immediately check partner status
@@ -520,8 +521,8 @@
 
             // UI Feedback
             if (statusInd) {
-                statusInd.className = 'text-secondary';
-                statusInd.innerHTML = '● Connecting...';
+                statusInd.className = 'text-success';
+                statusInd.innerHTML = '● Connected';
             }
         });
 
@@ -533,12 +534,18 @@
             }
         });
 
+        socket.on('connect_error', (error) => {
+            console.error('❌ Socket connection error:', error);
+        });
+
         // --- 3. REAL-TIME STATUS UPDATES ---
         socket.on('users_status_response', (data) => {
+            console.log('👥 User status response:', data);
             updateStatusUI(data[partnerId]);
         });
 
         socket.on('user_status', (data) => {
+            console.log('👤 User status update:', data);
             if (parseInt(data.user_id) === partnerId) {
                 updateStatusUI(data.status);
             }
@@ -560,11 +567,21 @@
 
         // --- 4. MESSAGING LOGIC (Instant UI Update) ---
         socket.on('new_message', (data) => {
+            console.log('💬 new_message event received:', data);
             appendMessage(data);
         });
 
         function appendMessage(data) {
             if (!chatContainer) return;
+
+            console.log('📨 Received message:', data);
+
+            // CRITICAL FIX: Remove "No messages yet" placeholder if it exists
+            const placeholder = chatContainer.querySelector('.text-center.py-5');
+            if (placeholder) {
+                console.log('🗑️ Removing placeholder');
+                placeholder.remove();
+            }
 
             const isMe = parseInt(data.sender_id) === currentUserId;
 
@@ -595,6 +612,7 @@
             `;
 
             chatContainer.appendChild(msgDiv);
+            console.log('✅ Message appended to DOM');
 
             // Smooth Scroll to bottom
             requestAnimationFrame(() => {
