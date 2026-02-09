@@ -578,52 +578,53 @@
         });
 
         function appendMessage(data) {
-            if (!chatContainer) return;
+            if (!chatContainer) {
+                console.error('❌ chatContainer not found!');
+                return;
+            }
 
             console.log('📨 Received message:', data);
 
-            // CRITICAL FIX: Remove "No messages yet" placeholder if it exists
-            const placeholder = chatContainer.querySelector('.text-center.py-5');
-            if (placeholder) {
-                console.log('🗑️ Removing placeholder');
-                placeholder.remove();
-            }
+            // CRITICAL: Remove ALL placeholders (any empty state content)
+            const placeholders = chatContainer.querySelectorAll('.text-center, .d-flex.h-100');
+            placeholders.forEach(p => {
+                if (p.textContent.includes('No messages') || p.textContent.includes('Chat Locked')) {
+                    console.log('🗑️ Removing placeholder');
+                    p.remove();
+                }
+            });
 
             const isMe = parseInt(data.sender_id) === currentUserId;
 
-            // Create Message Element
+            // Create Message Element with EXPLICIT INLINE STYLES
             const msgDiv = document.createElement('div');
-            msgDiv.className = `d-flex mb-3 fade-in-up ${isMe ? 'justify-content-end' : 'justify-content-start'}`;
+            msgDiv.style.cssText = `
+                display: flex !important;
+                margin-bottom: 12px !important;
+                ${isMe ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}
+                visibility: visible !important;
+                opacity: 1 !important;
+            `;
 
-            // Avatar for other person
-            let avatarHtml = '';
-            if (!isMe) {
-                // We use a generic placeholder or try to get it from DOM if possible, 
-                // but keeping it simple and fast is key.
-                avatarHtml = `
-                <div class="rounded-circle me-2 align-self-end shadow-sm border border-white d-flex align-items-center justify-content-center bg-light text-secondary" 
-                     style="width: 32px; height: 32px; margin-bottom: 2rem; font-size: 12px;">
-                    <i class="bi bi-person-fill"></i>
-                </div>`;
-            }
+            // Message bubble with FORCED VISIBLE STYLES
+            const bubbleStyle = isMe
+                ? 'background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%); color: #ffffff !important;'
+                : 'background: #334155; color: #e2e8f0 !important; border: 1px solid #475569;';
 
             msgDiv.innerHTML = `
-                ${avatarHtml}
-                <div class="d-flex flex-column ${isMe ? 'align-items-end' : 'align-items-start'}" style="max-width: 75%;">
-                    <div class="chat-bubble ${isMe ? 'me' : 'them'} shadow-sm">
+                <div style="max-width: 75%; display: flex; flex-direction: column; ${isMe ? 'align-items: flex-end;' : 'align-items: flex-start;'}">
+                    <div style="${bubbleStyle} padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         ${data.content}
                     </div>
-                    <span class="chat-meta mt-1 ms-1 me-1">${data.time_display || 'Just now'}</span>
+                    <span style="font-size: 11px; color: #94a3b8; margin-top: 4px;">${data.time_display || 'Just now'}</span>
                 </div>
             `;
 
             chatContainer.appendChild(msgDiv);
-            console.log('✅ Message appended to DOM');
+            console.log('✅ Message appended to DOM:', data.content);
 
-            // Smooth Scroll to bottom
-            requestAnimationFrame(() => {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
+            // Force scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function sendMessage() {
