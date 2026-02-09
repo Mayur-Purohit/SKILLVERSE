@@ -501,11 +501,12 @@
         if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
         // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
-        // CRITICAL FIX: Force WebSocket transport to avoid polling/sticky session issues on Render
-        // This prevents the "loading again and again" disconnect loop
+        // Reverting to StudyVerse configuration: Polling first, then upgrade.
+        // This is more stable on Render as it allows sticky sessions to establish before WebSocket upgrade.
         const socket = io({
-            transports: ['websocket'],  // Force WebSocket only
-            upgrade: false,             // Disable upgrade from polling
+            transports: ['polling', 'websocket'],  // Match StudyVerse: Polling first
+            upgrade: true,
+            rememberUpgrade: true,
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
