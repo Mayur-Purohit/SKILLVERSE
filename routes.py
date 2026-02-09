@@ -1225,6 +1225,50 @@ def order_action(order_id, action):
             
     return redirect(url_for('user.order_detail', order_id=order_id))
 
+    return redirect(url_for('user.order_detail', order_id=order_id))
+
+@user_bp.route('/order/<int:order_id>/poll_messages')
+@login_required
+def poll_messages(order_id):
+    """
+    HTTP Polling Fallback for Chat
+    Returns new messages since last_id
+    """
+    last_id = request.args.get('last_id', 0, type=int)
+    
+    # Check permission
+    order = Order.query.get_or_404(order_id)
+    if current_user.id not in [order.buyer_id, order.seller_id] and not current_user.is_admin():
+        return jsonify({'error': 'Unauthorized'}), 403
+        
+    # Get new messages
+    # Note: chat_manager needs to be imported if not already available in scope (it is imported at top)
+    # But we need to use the method we just added to managers.py
+    new_messages = chat_manager.get_new_messages(order_id, current_user.id, last_id)
+    
+    # Format for frontend
+    import pytz
+    ist_tz = pytz.timezone('Asia/Kolkata')
+    
+    msg_list = []
+    for msg in new_messages:
+        # Format time to IST
+        created_at = msg.created_at
+        if created_at.tzinfo is None:
+            utc_tz = pytz.UTC
+            created_at = utc_tz.localize(created_at)
+        ist_time = created_at.astimezone(ist_tz)
+        
+        msg_list.append({
+            'id': msg.id,
+            'sender_id': msg.sender_id,
+            'content': msg.content,
+            'time_display': ist_time.strftime('%I:%M %p'),
+            'created_at': ist_time.isoformat()
+        })
+        
+    return jsonify({'messages': msg_list})
+
 @user_bp.route('/order/<int:order_id>/message', methods=['POST'])
 @login_required
 def send_message(order_id):

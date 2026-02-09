@@ -361,7 +361,7 @@
                     </div>
                     {% else %}
                     {% for msg in messages %}
-                    <div
+                    <div data-msg-id="{{ msg.id }}"
                         class="d-flex mb-4 {{ 'justify-content-end' if msg.sender_id == current_user.id else 'justify-content-start' }} fade-in-up">
                         {% if msg.sender_id != current_user.id %}
                         {% set sender = order.buyer if msg.sender_id == order.buyer.id else order.service.provider %}
@@ -500,6 +500,37 @@
         // Scroll to bottom on load
         if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
+        // --- HTTP POLLING FALLBACK (StudyVerse "1 second" logic) ---
+        let lastMessageId = 0;
+        const seenMessageIds = new Set();
+
+        // Initialize from DOM
+        document.querySelectorAll('[data-msg-id]').forEach(el => {
+            const id = parseInt(el.dataset.msgId);
+            if (id) {
+                lastMessageId = Math.max(lastMessageId, id);
+                seenMessageIds.add(id);
+            }
+        });
+
+        // Poll every 1.5s (Safety Net)
+        setInterval(async () => {
+            if (!orderId) return;
+            try {
+                const response = await fetch(`/user/order/${orderId}/poll_messages?last_id=${lastMessageId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            appendMessage(msg);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Polling error:', err);
+            }
+        }, 1500);
+
         // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
         // Reverting to StudyVerse configuration: Polling first, then upgrade.
         // This is more stable on Render as it allows sticky sessions to establish before WebSocket upgrade.
@@ -599,8 +630,20 @@
 
             const isMe = parseInt(data.sender_id) === currentUserId;
 
+            // CRITICAL: Deduplication per StudyVerse Logic
+            // If we've seen this message ID, skip it
+            if (data.id && seenMessageIds.has(parseInt(data.id))) {
+                console.log(`Skipping duplicate message ${data.id}`);
+                return;
+            }
+            if (data.id) {
+                seenMessageIds.add(parseInt(data.id));
+                lastMessageId = Math.max(lastMessageId, parseInt(data.id));
+            }
+
             // Create Message Element with EXPLICIT INLINE STYLES
             const msgDiv = document.createElement('div');
+            if (data.id) msgDiv.setAttribute('data-msg-id', data.id); // Add ID for tracking
             msgDiv.style.cssText = `
                 display: flex !important;
                 margin-bottom: 12px !important;

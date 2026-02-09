@@ -880,6 +880,21 @@ class ChatManager:
             
         return Message.query.filter_by(order_id=order_id).order_by(Message.created_at).all()
 
+    def get_new_messages(self, order_id, user_id, last_id=0):
+        """Get only new messages since last_id"""
+        # Verify permissions (reuse logic or keep simple if route handles it)
+        order = Order.query.get(order_id)
+        if not order:
+            return []
+            
+        if user_id not in [order.buyer_id, order.seller_id] and not User.query.get(user_id).is_admin():
+            return []
+            
+        return Message.query.filter(
+            Message.order_id == order_id,
+            Message.id > last_id
+        ).order_by(Message.created_at).all()
+
     def get_active_chats(self, user_id):
         """
         Get all active chats for a user (pending or in_progress only)
