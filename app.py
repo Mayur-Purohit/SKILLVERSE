@@ -13,6 +13,14 @@ Purpose: Initialize and configure Flask application
 import eventlet
 eventlet.monkey_patch()
 
+# Patch psycopg2 for greenlet support to prevent DB locking
+try:
+    from psycogreen.eventlet import patch_psycopg
+    patch_psycopg()
+    print("✅ Async DB driver patched with psycogreen/eventlet!")
+except ImportError:
+    print("⚠️ psycogreen not found - DB operations may block worker")
+
 from flask import Flask, render_template
 
 from flask_login import LoginManager
