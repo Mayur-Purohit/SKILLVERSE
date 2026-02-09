@@ -21,6 +21,8 @@
         --workroom-card-bg: #1e293b;
         --workroom-border: #334155;
         --chat-me-bg: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+        --chat-me-text: #ffffff;
+        /* WHITE text on blue gradient background */
         --chat-them-bg: #334155;
         --chat-them-text: #e2e8f0;
         --accent-color: #818cf8;
@@ -567,14 +569,12 @@
 
         // --- 4. MESSAGING LOGIC (Instant UI Update) ---
         socket.on('new_message', (data) => {
-            console.warn('🔥🔥🔥 NEW MESSAGE RECEIVED:', data);
-            alert('Message received: ' + data.content);  // TEMPORARY DEBUG
+            console.log('💬 new_message event received:', data);
             appendMessage(data);
         });
 
         socket.on('error', (data) => {
             console.error('❌ Socket error:', data);
-            alert('Socket error: ' + JSON.stringify(data));
         });
 
         function appendMessage(data) {
