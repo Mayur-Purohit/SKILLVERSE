@@ -135,10 +135,12 @@ def register_socketio_events(socketio):
             'time_display': ist_time.strftime('%I:%M %p')
         }
         
-        # 3. Broadcast to Room (This sends to EVERYONE in the room, including sender)
+        # 3. CRITICAL: Broadcast to Room with broadcast=True
+        # This ensures ALL users in the room receive the message (including sender)
         room = f'order_{order_id}'
-        emit('new_message', message_payload, room=room)
-        print(f'[Socket] Message sent to room {room}: {content[:20]}...')
+        print(f'📤 [Socket] Broadcasting to room {room}: {content[:50]}')
+        emit('new_message', message_payload, room=room, broadcast=True)
+        print(f'✅ [Socket] Broadcast complete')
 
         # 4. Handle Notifications (Async check)
         try:
