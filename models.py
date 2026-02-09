@@ -161,7 +161,7 @@ class User(UserMixin, db.Model):
         Returns:
             int: Total review count
         """
-        return sum(service.reviews.count() for service in self.get_services())
+        return sum(len(service.reviews) for service in self.get_services())
     
     def is_admin(self):
         """
