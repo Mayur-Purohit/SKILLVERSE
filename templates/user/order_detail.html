@@ -641,22 +641,26 @@
                 lastMessageId = Math.max(lastMessageId, parseInt(data.id));
             }
 
-            // Create Message Element with EXPLICIT INLINE STYLES
-            const msgDiv = document.createElement('div');
-            if (data.id) msgDiv.setAttribute('data-msg-id', data.id); // Add ID for tracking
-            msgDiv.style.cssText = `
-                display: flex !important;
-                margin-bottom: 12px !important;
-                ${isMe ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}
-                visibility: visible !important;
-                opacity: 1 !important;
-            `;
+
 
             // CRITICAL: Deduplication / Optimistic Update
-            // If we have a temp_id, check if this message is already showing (as 'Sending...')
+            // 1. Try exact match by temp_id
             let existingMsg = null;
             if (data.temp_id) {
                 existingMsg = chatContainer.querySelector(`[data-temp-id="${data.temp_id}"]`);
+            }
+
+            // 2. Fallback Heuristic (for Polling where temp_id is lost)
+            if (!existingMsg && !data.temp_id && isMe) {
+                // Find any optimistic message with same content
+                const optimisticMsgs = chatContainer.querySelectorAll('[data-temp-id]');
+                optimisticMsgs.forEach(el => {
+                    const contentEl = el.querySelector('div[style*="background"]'); // Naive text check
+                    if (contentEl && contentEl.textContent.trim() === data.content.trim()) {
+                        existingMsg = el;
+                        console.log('💡 Matched optimistic message by content heuristic');
+                    }
+                });
             }
 
             // Create Message Content HTML
@@ -679,9 +683,21 @@
                 existingMsg.innerHTML = innerHTML;
                 // Remove temp-id so we don't touch it again
                 existingMsg.removeAttribute('data-temp-id');
+                // Ensure we add the real ID to tracking
+                if (data.id) {
+                    existingMsg.setAttribute('data-msg-id', data.id);
+                    seenMessageIds.add(parseInt(data.id)); // Mark as seen!
+                }
             } else {
                 // Create NEW Message Element
                 const msgDiv = document.createElement('div');
+                if (data.id) msgDiv.setAttribute('data-msg-id', data.id); // Add ID for tracking
+
+                // Store temp_id if available to allow future updates
+                if (data.temp_id) {
+                    msgDiv.setAttribute('data-temp-id', data.temp_id);
+                }
+
                 msgDiv.style.cssText = `
                     display: flex !important;
                     margin-bottom: 12px !important;
@@ -689,11 +705,6 @@
                     visibility: visible !important;
                     opacity: 1 !important;
                 `;
-
-                // Store temp_id if available to allow future updates
-                if (data.temp_id) {
-                    msgDiv.setAttribute('data-temp-id', data.temp_id);
-                }
 
                 msgDiv.innerHTML = innerHTML;
                 chatContainer.appendChild(msgDiv);
