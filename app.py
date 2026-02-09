@@ -56,15 +56,18 @@ def create_app(config_name='default'):
     db.init_app(app)
     login_manager.init_app(app)
     
-    # Configure SocketIO for robust Eventlet compatibility
-    # Explicitly using 'eventlet' mode instead of 'threading' for better native support
+    # Configure SocketIO - Matching StudyVerse for stability on Render
+    # Using threading mode with Gunicorn/Eventlet worker (via monkey patch)
     socketio.init_app(app, 
-                      async_mode='eventlet', 
-                      ping_timeout=60, 
-                      ping_interval=25, 
-                      # Allow polling fallback first, then upgrade (Best for Render)
+                      async_mode='threading', 
+                      ping_timeout=120,           # 2 min timeout for slow connections
+                      ping_interval=25,           # Keep connection alive every 25s
+                      max_http_buffer_size=1e8,   # 100MB max message size
+                      logger=False,               # Disable noisy logs
+                      engineio_logger=False,      # Disable noisy engineio logs
                       transports=['polling', 'websocket'],
-                      cors_allowed_origins="*")
+                      cors_allowed_origins="*",
+                      cookie=None)                # Helps avoid session conflicts on proxies
                       
     oauth.init_app(app)
     mail.init_app(app)
