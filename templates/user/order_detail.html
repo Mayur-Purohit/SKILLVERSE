@@ -567,8 +567,14 @@
 
         // --- 4. MESSAGING LOGIC (Instant UI Update) ---
         socket.on('new_message', (data) => {
-            console.log('💬 new_message event received:', data);
+            console.warn('🔥🔥🔥 NEW MESSAGE RECEIVED:', data);
+            alert('Message received: ' + data.content);  // TEMPORARY DEBUG
             appendMessage(data);
+        });
+
+        socket.on('error', (data) => {
+            console.error('❌ Socket error:', data);
+            alert('Socket error: ' + JSON.stringify(data));
         });
 
         function appendMessage(data) {
@@ -643,11 +649,13 @@
             msgInput.focus();
 
             // 3. Send to Server
+            console.warn('📤 Sending message to server:', { order_id: orderId, content: content });
             socket.emit('send_message', {
                 order_id: orderId,
                 content: content,
                 temp_id: tempId
             });
+            console.warn('📤 Message emitted to socket');
         }
 
         // Event Listeners
