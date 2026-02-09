@@ -8,6 +8,10 @@ Author: SkillVerse Team
 Purpose: Initialize and configure Flask application
 """
 
+# CRITICAL FIX: Eventlet monkey patching MUST be first
+# This fixes worker timeout and invalid session errors on Render
+import eventlet
+eventlet.monkey_patch()
 
 from flask import Flask, render_template
 
@@ -56,10 +60,10 @@ def create_app(config_name='default'):
     db.init_app(app)
     login_manager.init_app(app)
     
-    # Configure SocketIO - Matching StudyVerse for stability on Render
-    # Using threading mode with Gunicorn/Eventlet worker (via monkey patch)
+    # Configure SocketIO - CRITICAL FIX for Render deployment
+    # Using eventlet mode to match Gunicorn worker class (fixes worker timeout)
     socketio.init_app(app, 
-                      async_mode='threading', 
+                      async_mode='eventlet',      # FIXED: Changed from 'threading' to 'eventlet'
                       ping_timeout=120,           # 2 min timeout for slow connections
                       ping_interval=25,           # Keep connection alive every 25s
                       max_http_buffer_size=1e8,   # 100MB max message size
