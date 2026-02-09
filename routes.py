@@ -2109,10 +2109,13 @@ def get_provider_public_slots(provider_id):
     start = request.args.get('start')
     end = request.args.get('end')
     
+    print(f"[Availability] Fetching slots for provider {provider_id}, range: {start} to {end}")
+    
     try:
         start_date = datetime.fromisoformat(start.replace('Z', '+00:00'))
         end_date = datetime.fromisoformat(end.replace('Z', '+00:00'))
-    except:
+    except Exception as e:
+        print(f"[Availability Error] Date parsing failed: {e}")
         return jsonify([])
 
     # Convert to UTC first, then remove timezone info to make it naive
@@ -2122,16 +2125,21 @@ def get_provider_public_slots(provider_id):
         end_date = end_date.astimezone(timezone.utc).replace(tzinfo=None)
 
     slots = availability_manager.get_provider_slots(provider_id, start_date, end_date)
+    print(f"[Availability] Found {len(slots)} total slots from database")
     
     events = []
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    # FIXED: Use datetime.utcnow() for naive UTC time (matches DB storage)
+    now = datetime.utcnow()
     
     for slot in slots:
         # Only show available slots (not booked)
         # Check explicitly for False to be safe
         is_blocked = slot.is_booked
+        is_future = slot.start_time > now
         
-        if not is_blocked and slot.start_time > now:
+        print(f"[Availability] Slot {slot.id}: start={slot.start_time}, is_booked={slot.is_booked}, is_future={is_future}")
+        
+        if not is_blocked and is_future:
             events.append({
                 'id': slot.id,
                 'title': 'Available',
@@ -2142,7 +2150,8 @@ def get_provider_public_slots(provider_id):
                 'display': 'block',
                 'extendedProps': {'booked': False}
             })
-        
+    
+    print(f"[Availability] Returning {len(events)} available slots to client")
     return jsonify(events)
 
 @availability_bp.route('/book', methods=['POST'])

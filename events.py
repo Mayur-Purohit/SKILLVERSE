@@ -154,7 +154,7 @@ def register_socketio_events(socketio):
                     user_id=recipient_id,
                     title=f'New Message from {current_user.username}',
                     message=f'{current_user.username}: {content[:30]}...',
-                    link=f'/order/{order_id}' # Hardcoded URL to avoid import loop or context issues
+                    link=f'/user/order/{order_id}' # Fixed URL path
                 )
                 db.session.add(notification)
                 db.session.commit()
