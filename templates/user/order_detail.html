@@ -513,7 +513,7 @@
             }
         });
 
-        // Poll every 1.5s (Safety Net)
+        // Poll every 5s (Safety Net - Reduced frequency to prevent server overload)
         setInterval(async () => {
             if (!orderId) return;
             try {
@@ -529,7 +529,7 @@
             } catch (err) {
                 console.error('Polling error:', err);
             }
-        }, 1500);
+        }, 5000);
 
         // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
         // Reverting to StudyVerse configuration: Polling first, then upgrade.
