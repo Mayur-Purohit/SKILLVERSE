@@ -501,9 +501,11 @@
         if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
         // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
-        // Allow default transport negotiation (Polling -> WebSocket) for maximum compatibility.
-        // Backend now handles sticky sessions/proxying via ProxyFix.
+        // CRITICAL FIX: Force WebSocket transport to avoid polling/sticky session issues on Render
+        // This prevents the "loading again and again" disconnect loop
         const socket = io({
+            transports: ['websocket'],  // Force WebSocket only
+            upgrade: false,             // Disable upgrade from polling
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
@@ -606,12 +608,19 @@
                 opacity: 1 !important;
             `;
 
-            // Message bubble with FORCED VISIBLE STYLES
+            // CRITICAL: Deduplication / Optimistic Update
+            // If we have a temp_id, check if this message is already showing (as 'Sending...')
+            let existingMsg = null;
+            if (data.temp_id) {
+                existingMsg = chatContainer.querySelector(`[data-temp-id="${data.temp_id}"]`);
+            }
+
+            // Create Message Content HTML
             const bubbleStyle = isMe
                 ? 'background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%); color: #ffffff !important;'
                 : 'background: #334155; color: #e2e8f0 !important; border: 1px solid #475569;';
 
-            msgDiv.innerHTML = `
+            const innerHTML = `
                 <div style="max-width: 75%; display: flex; flex-direction: column; ${isMe ? 'align-items: flex-end;' : 'align-items: flex-start;'}">
                     <div style="${bubbleStyle} padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         ${data.content}
@@ -620,11 +629,36 @@
                 </div>
             `;
 
-            chatContainer.appendChild(msgDiv);
-            console.log('✅ Message appended to DOM:', data.content);
+            if (existingMsg) {
+                // UPDATE existing optimistic message (replace "Sending..." with real time)
+                console.log('🔄 Updating optimistic message');
+                existingMsg.innerHTML = innerHTML;
+                // Remove temp-id so we don't touch it again
+                existingMsg.removeAttribute('data-temp-id');
+            } else {
+                // Create NEW Message Element
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = `
+                    display: flex !important;
+                    margin-bottom: 12px !important;
+                    ${isMe ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                `;
 
-            // Force scroll to bottom
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+                // Store temp_id if available to allow future updates
+                if (data.temp_id) {
+                    msgDiv.setAttribute('data-temp-id', data.temp_id);
+                }
+
+                msgDiv.innerHTML = innerHTML;
+                chatContainer.appendChild(msgDiv);
+
+                // Only scroll for new messages
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            console.log('✅ Message rendered:', data.content);
         }
 
         function sendMessage() {
@@ -642,7 +676,8 @@
             appendMessage({
                 sender_id: currentUserId,
                 content: content,
-                time_display: 'Sending...'
+                time_display: 'Sending...',
+                temp_id: tempId
             });
 
             // 2. Clear Input
@@ -650,13 +685,12 @@
             msgInput.focus();
 
             // 3. Send to Server
-            console.warn('📤 Sending message to server:', { order_id: orderId, content: content });
+            // console.warn('📤 Sending message to server:', { order_id: orderId, content: content });
             socket.emit('send_message', {
                 order_id: orderId,
                 content: content,
                 temp_id: tempId
             });
-            console.warn('📤 Message emitted to socket');
         }
 
         // Event Listeners
