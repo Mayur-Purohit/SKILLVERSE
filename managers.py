@@ -849,28 +849,34 @@ class ChatManager:
     """
     def send_message(self, order_id, sender_id, content):
         """Send a message in an order chat"""
-        # Verify sender is part of order (or admin)
-        order = Order.query.get(order_id)
-        if not order:
-            return None, "Order not found"
-        
-        sender = User.query.get(sender_id)
-        if not sender:
-            return None, "User not found"
+        try:
+            # Verify sender is part of order (or admin)
+            order = Order.query.get(order_id)
+            if not order:
+                return None, "Order not found"
             
-        if sender_id not in [order.buyer_id, order.seller_id] and not sender.is_admin():
-            return None, "Unauthorized"
+            sender = User.query.get(sender_id)
+            if not sender:
+                return None, "User not found"
+                
+            if sender_id not in [order.buyer_id, order.seller_id] and not sender.is_admin():
+                return None, "Unauthorized"
+                
+            message = Message(
+                order_id=order_id,
+                sender_id=sender_id,
+                content=content
+            )
             
-        message = Message(
-            order_id=order_id,
-            sender_id=sender_id,
-            content=content
-        )
-        
-        db.session.add(message)
-        db.session.commit()
-        
-        return message, None
+            db.session.add(message)
+            db.session.commit()
+            
+            return message, None
+            
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error sending message: {e}")
+            return None, "Failed to send message"
 
     def get_messages(self, order_id, user_id):
         """Get messages for an order"""
