@@ -1287,6 +1287,87 @@ def send_message(order_id):
     return redirect(url_for('user.order_detail', order_id=order_id))
 
 
+@user_bp.route('/order/<int:order_id>/send_message_api', methods=['POST'])
+@login_required
+def send_message_api(order_id):
+    """
+    JSON API endpoint for sending chat messages (HTTP fallback for WebSocket).
+    Prevents duplicate messages if the same content was already sent via WebSocket.
+    """
+    import pytz
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+        
+    content = data.get('content', '').strip()
+    temp_id = data.get('temp_id')
+    
+    if not content:
+        return jsonify({'error': 'Empty message'}), 400
+    
+    # Permission check
+    order = Order.query.get_or_404(order_id)
+    if current_user.id not in [order.buyer_id, order.seller_id]:
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    # Duplicate check: see if a message with identical content was sent by this user 
+    # in the last 10 seconds (likely already sent via WebSocket)
+    from datetime import datetime, timedelta
+    recent_cutoff = datetime.utcnow() - timedelta(seconds=10)
+    existing = Message.query.filter(
+        Message.order_id == order_id,
+        Message.sender_id == current_user.id,
+        Message.content == content,
+        Message.created_at >= recent_cutoff
+    ).first()
+    
+    if existing:
+        # Already sent via WebSocket - return the existing message data
+        ist_tz = pytz.timezone('Asia/Kolkata')
+        created_at = existing.created_at
+        if created_at.tzinfo is None:
+            created_at = pytz.UTC.localize(created_at)
+        ist_time = created_at.astimezone(ist_tz)
+        
+        return jsonify({
+            'success': True,
+            'duplicate': True,
+            'message': {
+                'id': existing.id,
+                'sender_id': existing.sender_id,
+                'content': existing.content,
+                'time_display': ist_time.strftime('%I:%M %p'),
+                'created_at': ist_time.isoformat(),
+                'temp_id': temp_id
+            }
+        })
+    
+    # Send message (new - WebSocket didn't deliver it)
+    msg, error = chat_manager.send_message(order_id, current_user.id, content)
+    if error:
+        return jsonify({'error': error}), 400
+    
+    # Format response
+    ist_tz = pytz.timezone('Asia/Kolkata')
+    created_at = msg.created_at
+    if created_at.tzinfo is None:
+        created_at = pytz.UTC.localize(created_at)
+    ist_time = created_at.astimezone(ist_tz)
+    
+    return jsonify({
+        'success': True,
+        'duplicate': False,
+        'message': {
+            'id': msg.id,
+            'sender_id': msg.sender_id,
+            'content': msg.content,
+            'time_display': ist_time.strftime('%I:%M %p'),
+            'created_at': ist_time.isoformat(),
+            'temp_id': temp_id
+        }
+    })
+
 @user_bp.route('/profile/<username>')
 def profile(username):
     """

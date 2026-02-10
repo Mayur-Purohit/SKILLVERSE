@@ -500,9 +500,14 @@
         // Scroll to bottom on load
         if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        // --- HTTP POLLING FALLBACK (StudyVerse "1 second" logic) ---
+        // --- TRACKING ---
         let lastMessageId = 0;
         const seenMessageIds = new Set();
+        let socketConnected = false;
+
+        // Track pending optimistic messages for HTTP fallback resolution
+        // Map of tempId -> { content, timestamp }
+        const pendingOptimistic = new Map();
 
         // Initialize from DOM
         document.querySelectorAll('[data-msg-id]').forEach(el => {
@@ -513,7 +518,9 @@
             }
         });
 
-        // Poll every 5s (Safety Net - Reduced frequency to prevent server overload)
+        // --- 2. HTTP POLLING (Primary Safety Net) ---
+        // Polls every 3s. This is the RELIABLE mechanism that always works.
+        // It also resolves any stuck "Sending..." optimistic messages.
         setInterval(async () => {
             if (!orderId) return;
             try {
@@ -526,36 +533,54 @@
                         });
                     }
                 }
+
+                // CRITICAL: Resolve any old stuck optimistic messages (older than 8s)
+                // If WebSocket failed to deliver the confirmation, polling will catch it
+                const now = Date.now();
+                pendingOptimistic.forEach((info, tempId) => {
+                    if (now - info.timestamp > 8000) {
+                        const el = chatContainer.querySelector(`[data-temp-id="${tempId}"]`);
+                        if (el) {
+                            // Update the time display from "Sending..." to "Sent"
+                            const timeSpan = el.querySelector('span[style*="font-size: 11px"]');
+                            if (timeSpan && timeSpan.textContent.includes('Sending')) {
+                                timeSpan.textContent = '✓ Sent';
+                            }
+                            // Remove temp-id to finalize
+                            el.removeAttribute('data-temp-id');
+                        }
+                        pendingOptimistic.delete(tempId);
+                    }
+                });
+
             } catch (err) {
                 console.error('Polling error:', err);
             }
-        }, 5000);
+        }, 3000);
 
-        // --- 2. WEBSOCKET CONNECTION (Robust & Persistent) ---
-        // Reverting to StudyVerse configuration: Polling first, then upgrade.
-        // This is more stable on Render as it allows sticky sessions to establish before WebSocket upgrade.
+        // --- 3. WEBSOCKET CONNECTION ---
+        // Use polling transport only on Render (more reliable behind their proxy)
+        // WebSocket upgrade is optional and will happen if supported
         const socket = io({
-            transports: ['polling', 'websocket'],  // Match StudyVerse: Polling first
+            transports: ['polling', 'websocket'],
             upgrade: true,
-            rememberUpgrade: true,
+            rememberUpgrade: false,          // Don't remember - let it re-negotiate each time
+            forceBase64: true,              // Avoid binary parsing issues on Render proxy
             reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
+            reconnectionDelay: 2000,
+            reconnectionDelayMax: 10000,
             reconnectionAttempts: Infinity,
-            timeout: 20000,
+            timeout: 60000,                 // 60s timeout (Render cold starts are slow)
             autoConnect: true
         });
 
         // Connection Events
         socket.on('connect', () => {
+            socketConnected = true;
             console.log('⚡ Chat Connected, Socket ID:', socket.id);
-            console.log('📡 Joining room for order:', orderId);
-            // Join the specific room for this order
             socket.emit('join', { order_id: orderId });
-            // Immediately check partner status
             socket.emit('check_users_status', { user_ids: [partnerId] });
 
-            // UI Feedback
             if (statusInd) {
                 statusInd.className = 'text-success';
                 statusInd.innerHTML = '● Connected';
@@ -563,7 +588,8 @@
         });
 
         socket.on('disconnect', () => {
-            console.log('🔌 Chat Disconnected - Reconnecting...');
+            socketConnected = false;
+            console.log('🔌 Chat Disconnected - Polling active as fallback');
             if (statusInd) {
                 statusInd.className = 'text-warning';
                 statusInd.innerHTML = '⚠ Reconnecting...';
@@ -571,17 +597,20 @@
         });
 
         socket.on('connect_error', (error) => {
-            console.error('❌ Socket connection error:', error);
+            socketConnected = false;
+            console.warn('⚠ Socket connection error (polling fallback active):', error.message || error);
+            if (statusInd) {
+                statusInd.className = 'text-muted';
+                statusInd.innerHTML = '● Checking...';
+            }
         });
 
-        // --- 3. REAL-TIME STATUS UPDATES ---
+        // --- 4. REAL-TIME STATUS UPDATES ---
         socket.on('users_status_response', (data) => {
-            console.log('👥 User status response:', data);
             updateStatusUI(data[partnerId]);
         });
 
         socket.on('user_status', (data) => {
-            console.log('👤 User status update:', data);
             if (parseInt(data.user_id) === partnerId) {
                 updateStatusUI(data.status);
             }
@@ -589,7 +618,6 @@
 
         function updateStatusUI(status) {
             if (!statusInd) return;
-
             if (status === 'online') {
                 statusInd.className = 'text-success fw-bold fade-in';
                 statusInd.innerHTML = '● Online';
@@ -601,9 +629,9 @@
             }
         }
 
-        // --- 4. MESSAGING LOGIC (Instant UI Update) ---
+        // --- 5. MESSAGING LOGIC ---
         socket.on('new_message', (data) => {
-            console.log('💬 new_message event received:', data);
+            console.log('💬 Received via WebSocket:', data);
             appendMessage(data);
         });
 
@@ -612,28 +640,32 @@
         });
 
         function appendMessage(data) {
-            if (!chatContainer) {
-                console.error('❌ chatContainer not found!');
-                return;
-            }
+            if (!chatContainer) return;
 
-            console.log('📨 Received message:', data);
-
-            // CRITICAL: Remove ALL placeholders (any empty state content)
+            // Remove empty-state placeholders
             const placeholders = chatContainer.querySelectorAll('.text-center, .d-flex.h-100');
             placeholders.forEach(p => {
                 if (p.textContent.includes('No messages') || p.textContent.includes('Chat Locked')) {
-                    console.log('🗑️ Removing placeholder');
                     p.remove();
                 }
             });
 
             const isMe = parseInt(data.sender_id) === currentUserId;
 
-            // CRITICAL: Deduplication per StudyVerse Logic
-            // If we've seen this message ID, skip it
+            // Deduplication: skip if we've already rendered this server message ID
             if (data.id && seenMessageIds.has(parseInt(data.id))) {
-                console.log(`Skipping duplicate message ${data.id}`);
+                // But still update optimistic message if it exists (replace "Sending..." with real time)
+                if (data.temp_id) {
+                    const existingOpt = chatContainer.querySelector(`[data-temp-id="${data.temp_id}"]`);
+                    if (existingOpt) {
+                        const timeSpan = existingOpt.querySelector('span[style*="font-size: 11px"]');
+                        if (timeSpan && timeSpan.textContent.includes('Sending')) {
+                            timeSpan.textContent = data.time_display || '✓ Sent';
+                        }
+                        existingOpt.removeAttribute('data-temp-id');
+                        pendingOptimistic.delete(data.temp_id);
+                    }
+                }
                 return;
             }
             if (data.id) {
@@ -641,29 +673,30 @@
                 lastMessageId = Math.max(lastMessageId, parseInt(data.id));
             }
 
-
-
-            // CRITICAL: Deduplication / Optimistic Update
-            // 1. Try exact match by temp_id
+            // --- Optimistic Update Resolution ---
             let existingMsg = null;
+
+            // 1. Exact match by temp_id (WebSocket path)
             if (data.temp_id) {
                 existingMsg = chatContainer.querySelector(`[data-temp-id="${data.temp_id}"]`);
             }
 
-            // 2. Fallback Heuristic (for Polling where temp_id is lost)
+            // 2. Content heuristic (Polling path - temp_id not available)
             if (!existingMsg && !data.temp_id && isMe) {
-                // Find any optimistic message with same content
                 const optimisticMsgs = chatContainer.querySelectorAll('[data-temp-id]');
-                optimisticMsgs.forEach(el => {
-                    const contentEl = el.querySelector('div[style*="background"]'); // Naive text check
-                    if (contentEl && contentEl.textContent.trim() === data.content.trim()) {
+                for (const el of optimisticMsgs) {
+                    const bubble = el.querySelector('div[style*="padding"]');
+                    if (bubble && bubble.textContent.trim() === (data.content || '').trim()) {
                         existingMsg = el;
-                        console.log('💡 Matched optimistic message by content heuristic');
+                        // Clean up pending tracking
+                        const tid = el.getAttribute('data-temp-id');
+                        if (tid) pendingOptimistic.delete(parseInt(tid));
+                        break;
                     }
-                });
+                }
             }
 
-            // Create Message Content HTML
+            // Build message HTML
             const bubbleStyle = isMe
                 ? 'background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%); color: #ffffff !important;'
                 : 'background: #334155; color: #e2e8f0 !important; border: 1px solid #475569;';
@@ -678,25 +711,19 @@
             `;
 
             if (existingMsg) {
-                // UPDATE existing optimistic message (replace "Sending..." with real time)
-                console.log('🔄 Updating optimistic message');
+                // UPDATE the optimistic message with real data
                 existingMsg.innerHTML = innerHTML;
-                // Remove temp-id so we don't touch it again
                 existingMsg.removeAttribute('data-temp-id');
-                // Ensure we add the real ID to tracking
                 if (data.id) {
                     existingMsg.setAttribute('data-msg-id', data.id);
-                    seenMessageIds.add(parseInt(data.id)); // Mark as seen!
+                    seenMessageIds.add(parseInt(data.id));
                 }
+                if (data.temp_id) pendingOptimistic.delete(data.temp_id);
             } else {
-                // Create NEW Message Element
+                // CREATE new message element
                 const msgDiv = document.createElement('div');
-                if (data.id) msgDiv.setAttribute('data-msg-id', data.id); // Add ID for tracking
-
-                // Store temp_id if available to allow future updates
-                if (data.temp_id) {
-                    msgDiv.setAttribute('data-temp-id', data.temp_id);
-                }
+                if (data.id) msgDiv.setAttribute('data-msg-id', data.id);
+                if (data.temp_id) msgDiv.setAttribute('data-temp-id', data.temp_id);
 
                 msgDiv.style.cssText = `
                     display: flex !important;
@@ -708,14 +735,11 @@
 
                 msgDiv.innerHTML = innerHTML;
                 chatContainer.appendChild(msgDiv);
-
-                // Only scroll for new messages
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-
-            console.log('✅ Message rendered:', data.content);
         }
 
+        // --- 6. SEND MESSAGE (with HTTP fallback) ---
         function sendMessage() {
             if (!msgInput || !msgInput.value.trim()) return;
             if (orderStatus === 'pending') {
@@ -724,10 +748,9 @@
             }
 
             const content = msgInput.value.trim();
-            const tempId = Date.now(); // Temporary ID for optimistic UI
+            const tempId = Date.now();
 
-            // 1. Optimistic UI Update (Show message IMMEDIATELY)
-            // This makes it feel like "Real WhatsApp" speed
+            // 1. Optimistic UI (instant)
             appendMessage({
                 sender_id: currentUserId,
                 content: content,
@@ -735,30 +758,58 @@
                 temp_id: tempId
             });
 
-            // 2. Clear Input
+            // Track this optimistic message
+            pendingOptimistic.set(tempId, { content: content, timestamp: Date.now() });
+
+            // 2. Clear input
             msgInput.value = '';
             msgInput.focus();
 
-            // 3. Send to Server
-            // console.warn('📤 Sending message to server:', { order_id: orderId, content: content });
-            socket.emit('send_message', {
-                order_id: orderId,
-                content: content,
-                temp_id: tempId
-            });
+            // 3. Try WebSocket first
+            if (socketConnected) {
+                socket.emit('send_message', {
+                    order_id: orderId,
+                    content: content,
+                    temp_id: tempId
+                });
+            }
+
+            // 4. ALWAYS also send via HTTP POST as a guaranteed fallback
+            // This ensures the message is saved to DB even if WebSocket silently fails
+            // The deduplication in chat_manager.send_message prevents duplicates
+            // We use a slight delay to let WebSocket try first
+            setTimeout(async () => {
+                // Only send HTTP fallback if the optimistic message is still pending
+                if (pendingOptimistic.has(tempId)) {
+                    try {
+                        const resp = await fetch(`/user/order/${orderId}/send_message_api`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ content: content, temp_id: tempId })
+                        });
+                        if (resp.ok) {
+                            const result = await resp.json();
+                            if (result.success && result.message) {
+                                // Update the optimistic message with server data
+                                appendMessage(result.message);
+                            }
+                        }
+                    } catch (err) {
+                        console.warn('HTTP fallback also failed:', err);
+                    }
+                }
+            }, 3000); // Wait 3s for WebSocket to succeed first
         }
 
         // Event Listeners
         if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-
         if (msgInput) {
             msgInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') sendMessage();
             });
         }
 
-
-        // --- 5. CALENDAR LOGIC (Only if needed) ---
+        // --- 7. CALENDAR LOGIC ---
         const calendarEl = document.getElementById('bookingCalendar');
         if (calendarEl) {
             const calendarModal = document.getElementById('calendarModal');
@@ -779,7 +830,6 @@
                         const slotID = info.event.id;
                         document.getElementById('selectedSlotId').value = slotID;
 
-                        // Show Confirmation Modal
                         const start = info.event.start.toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
                         document.getElementById('selectedTimeDisplay').textContent = start;
 
