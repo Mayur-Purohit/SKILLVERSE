@@ -19,7 +19,8 @@
                     <div class="list-group list-group-flush">
                         {% if chats %}
                         {% for chat in chats %}
-                        {% set other_user = chat.buyer if chat.seller_id == current_user.id else chat.seller %}
+                        {% set other_user = chat.buyer if (chat.seller_id == current_user.id) else (chat.seller if
+                        (chat.buyer_id == current_user.id) else chat.buyer) %}
 
                         <a href="{{ url_for('user.order_detail', order_id=chat.id) }}"
                             class="list-group-item list-group-item-action p-4 border-bottom border-light hover-bg-light transition-smooth">
@@ -53,12 +54,10 @@
                                             <span class="small">{{ chat.service.title }}</span>
                                         </div>
 
-                                        {% if chat.messages.count() > 0 %}
                                         <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm"
                                             style="width: 24px; height: 24px;">
                                             <i class="bi bi-chevron-right" style="font-size: 12px;"></i>
                                         </div>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

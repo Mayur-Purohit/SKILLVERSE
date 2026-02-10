@@ -63,12 +63,12 @@ def register_socketio_events(socketio):
         if not order_id:
             return
         
-        # Verify user is part of this order
+        # Verify user is part of this order (or is admin)
         order = Order.query.get(order_id)
         if not order:
             return
             
-        if current_user.id not in [order.buyer_id, order.seller_id]:
+        if current_user.id not in [order.buyer_id, order.seller_id] and not current_user.is_admin():
             return
         
         room = f'order_{order_id}'
@@ -109,8 +109,31 @@ def register_socketio_events(socketio):
         if not order_id or not content:
             return
         
-        # 1. Save message to database
-        message, error = chat_manager.send_message(order_id, current_user.id, content)
+        # Verify user can send (buyer, seller, or admin)
+        order = Order.query.get(order_id)
+        if not order:
+            emit('error', {'message': 'Order not found'})
+            return
+        if current_user.id not in [order.buyer_id, order.seller_id] and not current_user.is_admin():
+            emit('error', {'message': 'Unauthorized'})
+            return
+        
+        # 1. Save message to database (duplicate check for HTTP fallback)
+        from datetime import timedelta
+        recent_cutoff = datetime.utcnow() - timedelta(seconds=10)
+        existing = Message.query.filter(
+            Message.order_id == order_id,
+            Message.sender_id == current_user.id,
+            Message.content == content,
+            Message.created_at >= recent_cutoff
+        ).first()
+        
+        if existing:
+            # Already sent via HTTP fallback - broadcast existing message
+            message = existing
+            error = None
+        else:
+            message, error = chat_manager.send_message(order_id, current_user.id, content)
         
         if error:
             emit('error', {'message': error})

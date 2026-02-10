@@ -477,7 +477,7 @@
 
 <!-- Server data for JavaScript -->
 <div id="order-data" class="d-none" data-order-id="{{ order.id }}" data-current-user-id="{{ current_user.id }}"
-    data-partner-id="{{ order.seller_id if current_user.id == order.buyer_id else order.buyer_id }}"
+    data-partner-id="{% if current_user.id == order.buyer_id %}{{ order.seller_id }}{% elif current_user.id == order.seller_id %}{{ order.buyer_id }}{% else %}{{ order.buyer_id }}{% endif %}"
     data-order-status="{{ order.status }}" data-provider-id="{{ order.service.provider.id }}">
 </div>
 

@@ -1308,7 +1308,7 @@ def send_message_api(order_id):
     
     # Permission check
     order = Order.query.get_or_404(order_id)
-    if current_user.id not in [order.buyer_id, order.seller_id]:
+    if current_user.id not in [order.buyer_id, order.seller_id] and not current_user.is_admin():
         return jsonify({'error': 'Unauthorized'}), 403
     
     # Duplicate check: see if a message with identical content was sent by this user 

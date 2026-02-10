@@ -849,12 +849,16 @@ class ChatManager:
     """
     def send_message(self, order_id, sender_id, content):
         """Send a message in an order chat"""
-        # Verify sender is part of order
+        # Verify sender is part of order (or admin)
         order = Order.query.get(order_id)
         if not order:
             return None, "Order not found"
+        
+        sender = User.query.get(sender_id)
+        if not sender:
+            return None, "User not found"
             
-        if sender_id not in [order.buyer_id, order.seller_id]:
+        if sender_id not in [order.buyer_id, order.seller_id] and not sender.is_admin():
             return None, "Unauthorized"
             
         message = Message(
@@ -874,20 +878,27 @@ class ChatManager:
         order = Order.query.get(order_id)
         if not order:
             return []
+        
+        user = User.query.get(user_id)
+        if not user:
+            return []
             
-        if user_id not in [order.buyer_id, order.seller_id] and not User.query.get(user_id).is_admin():
+        if user_id not in [order.buyer_id, order.seller_id] and not user.is_admin():
             return []
             
         return Message.query.filter_by(order_id=order_id).order_by(Message.created_at).all()
 
     def get_new_messages(self, order_id, user_id, last_id=0):
         """Get only new messages since last_id"""
-        # Verify permissions (reuse logic or keep simple if route handles it)
         order = Order.query.get(order_id)
         if not order:
             return []
+        
+        user = User.query.get(user_id)
+        if not user:
+            return []
             
-        if user_id not in [order.buyer_id, order.seller_id] and not User.query.get(user_id).is_admin():
+        if user_id not in [order.buyer_id, order.seller_id] and not user.is_admin():
             return []
             
         return Message.query.filter(
@@ -898,6 +909,8 @@ class ChatManager:
     def get_active_chats(self, user_id):
         """
         Get all active chats for a user (pending or in_progress only)
+        Admin users can see ALL active orders.
+        Uses eager loading to prevent N+1 queries.
         
         Args:
             user_id (int): User ID
@@ -905,11 +918,27 @@ class ChatManager:
         Returns:
             list: List of Order objects that represent active chats
         """
-        # Find orders where the user is buyer or seller AND status is active
-        orders = Order.query.filter(
-            db.or_(Order.buyer_id == user_id, Order.seller_id == user_id),
-            Order.status.in_(['pending', 'in_progress'])
-        ).order_by(Order.updated_at.desc()).all()
+        user = User.query.get(user_id)
+        if not user:
+            return []
+        
+        query = Order.query.options(
+            joinedload(Order.buyer),
+            joinedload(Order.seller),
+            joinedload(Order.service)
+        )
+        
+        if user.is_admin():
+            # Admin sees all active orders
+            orders = query.filter(
+                Order.status.in_(['pending', 'in_progress'])
+            ).order_by(Order.updated_at.desc()).all()
+        else:
+            # Regular user sees only their orders
+            orders = query.filter(
+                db.or_(Order.buyer_id == user_id, Order.seller_id == user_id),
+                Order.status.in_(['pending', 'in_progress'])
+            ).order_by(Order.updated_at.desc()).all()
         
         return orders
 
